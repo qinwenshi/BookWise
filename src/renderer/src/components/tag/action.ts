@@ -48,7 +48,7 @@ export class TagAction {
         ) as any
       )
     } catch (error) {
-      toastError('读取图书列表失败' + error)
+      toastError('读取标签列表失败' + error)
       return [] as Tag[]
     }
   }

@@ -235,6 +235,7 @@ export class NoteRichAction {
     if (source.length === 0) return
 
     const tag = TagAction.toJSON(tags)
+    
     this.notes.value.push({ value, time: now() })
 
     const sources = source.map((item) => {
@@ -265,7 +266,9 @@ export class NoteRichAction {
 
     const id = this.noteDetail?.id
     if (!id) return
+    
     const tag = TagAction.toJSON(tags)
+    
     if (value) {
       this.notes.value.push({ value, time: now() })
     }

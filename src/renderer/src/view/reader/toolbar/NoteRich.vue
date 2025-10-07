@@ -5,7 +5,7 @@ import { t } from '@renderer/data';
 import { toastError, toastWarning } from '@renderer/shared';
 import { get, onClickOutside, onKeyStroke, set, useElementBounding, useParentElement, useToggle } from '@vueuse/core';
 import { useRouteParams } from '@vueuse/router';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { highlighter } from '../highlight';
 import NoteListView from './NoteList.vue';
 import SourceListView from './SourceList.vue';
@@ -54,6 +54,12 @@ const noteList = noteRichAction.notes
 const tags = ref<Tag[]>([]) // 标签
 let note: Note | undefined = undefined;
 
+// 监控标签变化
+watchEffect(() => {
+  console.log(`🏷️ [NoteRich监控] 标签数据变化:`, get(tags))
+  console.log(`🏷️ [NoteRich监控] 标签数量: ${get(tags).length}`)
+})
+
 function closeNoteRich() {
   // 处理直接新增笔记的特殊情况
   if (!NoteBarStyle.isPainted) {
@@ -99,8 +105,8 @@ async function submit() {
     return
   }
   try {
-    if (get(submitLoading)) return
     setSubmitLoading(true)
+    
     if (NoteBarStyle.isPainted) {
       // 新增，之前有高亮,但无笔记内容
       await noteRichAction.addInNoNotes(get(tags))

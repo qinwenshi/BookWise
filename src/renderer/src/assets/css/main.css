@@ -32,3 +32,13 @@ html {
   visibility: hidden;
   z-index: -999;
 }
+
+/* 确保中文字符正确显示 */
+.badge {
+  font-family: -apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC',
+    'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  word-break: keep-all;
+}

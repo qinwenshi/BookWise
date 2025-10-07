@@ -2,6 +2,7 @@ import { Note, db } from '@renderer/batabase'
 import { t } from '@renderer/data'
 import { bookJump } from '@renderer/hooks'
 import { now, toastError } from '@renderer/shared'
+import { NoteSyncService } from '@renderer/shared/note-sync-service'
 import { DomSource } from '@renderer/web-highlight'
 import { useObservable } from '@vueuse/rxjs'
 import { liveQuery } from 'dexie'
@@ -50,6 +51,14 @@ export class NoteAction {
       }
 
       await db.notes.put(res)
+      
+      // 触发同步
+      try {
+        await NoteSyncService.getInstance().syncNote(res)
+      } catch (error) {
+        console.warn('Failed to sync note after creation:', error)
+      }
+      
       return res
     } catch (error) {
       toastError(t('note.addNoteFail'))
@@ -57,9 +66,16 @@ export class NoteAction {
     }
   }
 
-  static removeOne(id: string) {
+  static async removeOne(id: string) {
     try {
-      return db.notes.delete(id)
+      // 先触发远程删除同步
+      try {
+        await NoteSyncService.getInstance().deleteNote(id)
+      } catch (error) {
+        console.warn('Failed to sync note deletion:', error)
+      }
+      
+      return await db.notes.delete(id)
     } catch (error) {
       toastError(t('common.removeFail'))
       return Promise.reject(error)
@@ -70,9 +86,21 @@ export class NoteAction {
     return db.notes.where('sourceId').anyOf(sourceId).delete()
   }
 
-  static update(id: string, value: Partial<Note>) {
+  static async update(id: string, value: Partial<Note>) {
     try {
-      return db.notes.update(id, { ...value, updateTime: now() })
+      const result = await db.notes.update(id, { ...value, updateTime: now() })
+      
+      // 获取更新后的笔记并触发同步
+      try {
+        const updatedNote = await db.notes.get(id)
+        if (updatedNote) {
+          await NoteSyncService.getInstance().syncNote(updatedNote)
+        }
+      } catch (error) {
+        console.warn('Failed to sync note after update:', error)
+      }
+      
+      return result
     } catch (error) {
       toastError(t('common.updateFail'))
       return Promise.reject(error)
@@ -174,4 +202,5 @@ export class NoteAction {
     localStorage.setItem('__note__', JSON.stringify(value))
     bookJump(value.eBookId)
   }
+
 }

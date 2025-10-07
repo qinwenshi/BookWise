@@ -73,13 +73,13 @@ const reset = () => {
 
 const addAction = (val: Item) => {
   const isExist = list.value.find(item => item.id === val.id)
+  
   if (!isExist) {
     if (isMultiple) {
       list.value.push(val)
       emit('update:modelValue', list.value)
     } else {
       emit('update:modelValue', val)
-
       set(inputValue, val.value)
     }
   } else {
@@ -107,7 +107,6 @@ const onAdd = useThrottleFn(async () => {
     return
   }
 
-
   const isExist = get(allData).find(item => item.value === val)
   if (!isExist) {
     if (props.add) {
@@ -117,7 +116,6 @@ const onAdd = useThrottleFn(async () => {
         addAction(res)
       }
     }
-
   } else {
     addAction(isExist)
   }
@@ -179,7 +177,7 @@ const onClose = () => setShow(false)
         </a>
       </li>
     </ul>
-    <label class="input input-bordered flex items-center gap-2 " :class="className" ref="container">
+    <label class="input input-bordered flex items-center gap-2 focus-within:input-primary" :class="className" ref="container">
       <slot></slot>
       <input type="text" class="grow" v-model="inputValue" :placeholder="placeholder" @keydown.enter="onAdd()"
         @keydown.prevent.down="onDown()" @keydown.prevent.up="onUp()" @keydown.prevent.tab="onTab(onChoose)" />

@@ -45,8 +45,11 @@ export const settingStore = useStorage<SettingState>(
   { mergeDefaults: true }
 )
 
-if (isElectron) {
-  set(settingStore, window.store.get('setting'))
+if (isElectron && window.store) {
+  const electronSettings = window.store.get('setting')
+  if (electronSettings) {
+    set(settingStore, electronSettings)
+  }
   watchEffect(() => {
     for (const key in defaultState) {
       const val = get(settingStore)[key]

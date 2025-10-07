@@ -10,12 +10,20 @@ import { TagAction } from '../../tag/action';
 import TagListview from '../../tag/TagList.vue';
 import { TagItem } from '../../tag/type';
 import { NoteAction } from '../action';
+import SyncStatus from '../../sync/SyncStatus.vue';
+import { useRouter } from 'vue-router';
 
 const store = useFilterNoteStore()
+const router = useRouter()
 
 const isSortBy = (val: string) => get(noteSortStore).sortBy === val
 
 const noteList = NoteAction.observable()
+
+// 打开同步设置
+const openSyncSettings = () => {
+  router.push('/setting')
+}
 
 
 
@@ -94,6 +102,8 @@ watchEffect(() => {
 
 <template>
   <div class="flex flex-row items-center gap-2">
+    <!-- 同步状态 -->
+    <SyncStatus @open-settings="openSyncSettings" />
     <DropdownView details-class="dropdown-bottom dropdown-end" summary-class="btn btn-sm m-1">
       <template v-slot:summary>
         <ArrowDownNarrowWide />
