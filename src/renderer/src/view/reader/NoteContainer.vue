@@ -10,6 +10,7 @@ import { get, onClickOutside, onKeyStroke, set, useElementSize, useThrottleFn, u
 import { useRouteParams } from '@vueuse/router';
 import { Baseline, Copy, Highlighter, SpellCheck2, Trash } from 'lucide-vue-next';
 import { computed, ref } from 'vue';
+import AIPanel from './AIPanel.vue';
 import BookDetailView from './BookDetail.vue';
 import { HighlightType, highlightColor } from './highlight-color';
 import NoteListView from './toolbar/NoteList.vue';
@@ -24,7 +25,24 @@ interface Props {
 const props = defineProps<Props>()
 const emit = defineEmits<{
   (e: 'jump', data: Note): void,
+  (e: 'openAI', context?: string): void,
 }>()
+
+// AI面板引用
+const aiPanelRef = ref<InstanceType<typeof AIPanel>>()
+
+// 打开AI面板并设置上下文
+const openAIPanel = (context?: string) => {
+  activeTab.value = 'ai'
+  if (context && aiPanelRef.value) {
+    aiPanelRef.value.setContext(context)
+  }
+}
+
+// 暴露方法给父组件
+defineExpose({
+  openAIPanel
+})
 
 const bookParam = useRouteParams<string>('id')
 const [loading, setLoading] = useToggle(false)
@@ -189,10 +207,18 @@ const throttleClick = useThrottleFn((val: Note) => {
       </a>
       <a role="tab" class="tab transition ease-in-out" :class="{ 'tab-active': activeTab === 'note' }"
         @click="changeTab('note')" v-else>{{ t('menu.note') }}</a>
+      
+      <a role="tab" class="tab transition ease-in-out" :class="{ 'tab-active': activeTab === 'ai' }"
+        @click="changeTab('ai')">AI助手</a>
     </div>
     <div class="flex-1 transition ease-in-out p-3 relative">
       <!-- 书籍信息 -->
       <BookDetailView v-if="activeTab === 'book'" :book="book" :notes="notes" :time="readTime" />
+
+      <!-- AI助手 -->
+      <div v-else-if="activeTab === 'ai'" class="absolute inset-0">
+        <AIPanel ref="aiPanelRef" :book="book" />
+      </div>
 
       <!-- 笔记 -->
       <div v-else class="absolute inset-0 ">

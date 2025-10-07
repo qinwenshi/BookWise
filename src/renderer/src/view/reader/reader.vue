@@ -67,6 +67,7 @@ const scrollReaderViewRef = ref<InstanceType<typeof ScrollReaderView>>() // 滚�
 const sectionReaderViewRef = ref<InstanceType<typeof SectionReaderView>>() // 章节视图
 const doubleReaderViewRef = ref<InstanceType<typeof DoubleReaderView>>() // 双栏视图
 const readerListenBookViewRef = ref<InstanceType<typeof ReaderListenBookView>>() // 朗读视图
+const noteViewRef = ref<InstanceType<typeof NoteView>>() // 笔记视图
 
 const isPDF = ref(false)
 
@@ -161,6 +162,28 @@ async function noteJump(note: Note) {
 const showBack = ref(router.options.routes.length > 1 && !settingStore.value.isOpenNew)
 function goBack() {
   router.go(-1)
+}
+
+// AI面板
+function openAI(context?: string) {
+  // 确保笔记面板是显示的
+  if (isSM.value) {
+    // 移动端：打开抽屉
+    const drawer = document.getElementById('note-drawer') as HTMLInputElement
+    if (drawer) {
+      drawer.checked = true
+    }
+  } else {
+    // 桌面端：显示笔记面板
+    if (get(isNote)) {
+      toggleNote()
+    }
+  }
+  
+  // 打开AI面板
+  if (noteViewRef.value) {
+    noteViewRef.value.openAIPanel(context)
+  }
 }
 
 // 排版
@@ -565,7 +588,7 @@ onBeforeUnmount(() => {
             </template>
 
             <!-- 工具栏 -->
-            <ToolbarView :book="bookInfo" v-if="isShowToolBar" />
+            <ToolbarView :book="bookInfo" :onOpenAI="openAI" v-if="isShowToolBar" />
 
             <!-- 添加笔记 -->
             <NoteRichView :book="bookInfo" v-if="isNoteRichShow" />
@@ -579,7 +602,7 @@ onBeforeUnmount(() => {
         </DrawerView>
       </div>
       <div class="hidden lg:block">
-        <NoteView :book="bookInfo" :read-time="readTime" @jump="noteJump" :class="{ 'hide': isNote }" />
+        <NoteView ref="noteViewRef" :book="bookInfo" :read-time="readTime" @jump="noteJump" :class="{ 'hide': isNote }" />
       </div>
 
       <!-- 控制播放音频 -->

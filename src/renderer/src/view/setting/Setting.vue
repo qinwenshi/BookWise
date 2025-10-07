@@ -4,6 +4,7 @@ import { CheckBoxView, Select, SelectView, } from '@renderer/components';
 import { bookshelfModeList, fontFamilies, langs, nodeModeList, t, themes } from '@renderer/data';
 import { settingStore } from '@renderer/store';
 import SyncSettings from '@renderer/components/sync/SyncSettings.vue';
+import AISettings from '@renderer/components/ai/AISettings.vue';
 
 const textOpacity = { '--tw-text-opacity': 0.6 };
 
@@ -58,6 +59,11 @@ const textOpacity = { '--tw-text-opacity': 0.6 };
             </div>
           </div>
         </div>
+      </div>
+      
+      <!-- AI设置 -->
+      <div class="col-span-full">
+        <AISettings />
       </div>
       
       <!-- 同步设置 -->

@@ -5,7 +5,7 @@ import { t } from '@renderer/data';
 import { toastError, toastSuccess } from '@renderer/shared';
 import { settingStore } from '@renderer/store';
 import { get, onClickOutside, set, useElementSize } from '@vueuse/core';
-import { Baseline, Copy, Headset, Highlighter, MessageSquareMore, SpellCheck2, Trash } from 'lucide-vue-next';
+import { Baseline, Copy, Headset, Highlighter, MessageSquareMore, SpellCheck2, Trash, Bot } from 'lucide-vue-next';
 
 import { BookRender, listenBookBus } from '@renderer/hooks';
 import { Ref, computed, ref } from 'vue';
@@ -17,6 +17,7 @@ import { NoteBarStyle, NoteToolBarAction, ToolbarStyle } from './action';
 
 const props = defineProps<{
   book: Book
+  onOpenAI?: (context?: string) => void
 }>()
 
 const container = ref<HTMLElement | null>(null)
@@ -117,6 +118,20 @@ const openNoteRich = () => {
   ToolbarStyle.close()
 }
 
+// 打开AI面板
+const openAI = () => {
+  // 获取选中的文本
+  const selectedText = ToolbarStyle.source.reduce((acc, cur) => acc + cur.text, '')
+  
+  // 调用父组件传入的openAI方法
+  if (props.onOpenAI) {
+    props.onOpenAI(selectedText)
+  }
+  
+  // 关闭工具栏
+  ToolbarStyle.close()
+}
+
 const list = computed(() => {
   return [
     { name: t('common.copy'), icon: Copy, click: () => noteToolBar.copySource(), active: 'copy' },
@@ -124,6 +139,7 @@ const list = computed(() => {
     { name: t('line.beeline'), icon: Baseline, click: () => noteToolBar.beeline(), active: HighlightType.beeline },
     { name: t('line.wavy'), icon: SpellCheck2, click: () => noteToolBar.wavy(), active: HighlightType.wavy },
     { name: t('note.write'), icon: MessageSquareMore, click: openNoteRich, active: 'note' },
+    { name: 'AI助手', icon: Bot, click: openAI, active: 'ai' },
   ]
 })
 
