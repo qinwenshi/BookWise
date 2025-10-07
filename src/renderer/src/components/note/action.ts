@@ -68,22 +68,43 @@ export class NoteAction {
 
   static async removeOne(id: string) {
     try {
-      // 先触发远程删除同步
+      const currentTime = now()
+      
+      // 1. 先在本地标记为删除状态
+      await db.notes.update(id, { 
+        isDelete: currentTime, 
+        updateTime: currentTime 
+      })
+      
+      // 2. 触发远程删除同步
       try {
         await NoteSyncService.getInstance().deleteNote(id)
+        // 远程同步成功，本地笔记保持 isDelete 标记状态，不进行物理删除
+        console.log(`Note ${id} marked as deleted locally and remotely`)
       } catch (error) {
         console.warn('Failed to sync note deletion:', error)
+        // 如果远程同步失败，恢复本地状态
+        await db.notes.update(id, { 
+          isDelete: null, 
+          updateTime: currentTime 
+        })
+        throw error
       }
-      
-      return await db.notes.delete(id)
     } catch (error) {
       toastError(t('common.removeFail'))
       return Promise.reject(error)
     }
   }
 
-  static removeBySoureIds(sourceId: string[]) {
-    return db.notes.where('sourceId').anyOf(sourceId).delete()
+  static async removeBySoureIds(sourceId: string[]) {
+    try {
+      const notes = await db.notes.where('sourceId').anyOf(sourceId).toArray()
+      const promises = notes.map(note => this.removeOne(note.id))
+      await Promise.all(promises)
+    } catch (error) {
+      toastError(t('common.removeFail'))
+      return Promise.reject(error)
+    }
   }
 
   static async update(id: string, value: Partial<Note>) {
@@ -145,15 +166,18 @@ export class NoteAction {
   }
 
   static async findByEBookId(eBookId: string) {
-    return await db.notes.where('eBookId').equals(eBookId).toArray()
+    const notes = await db.notes.where('eBookId').equals(eBookId).toArray()
+    return notes.filter(note => !note.isDelete)
   }
 
   static async findBySourceId(id: string) {
-    return await db.notes.where('sourceId').equals(id).first()
+    const note = await db.notes.where('sourceId').equals(id).first()
+    return note && !note.isDelete ? note : undefined
   }
 
   static async findBySourceIds(ids: string[]) {
-    return await db.notes.where('sourceId').anyOf(ids).toArray()
+    const notes = await db.notes.where('sourceId').anyOf(ids).toArray()
+    return notes.filter(note => !note.isDelete)
   }
 
   static async findBookPageNotes(eBookId: string, page: string) {
@@ -169,8 +193,9 @@ export class NoteAction {
     return result
   }
 
-  static getAll() {
-    return db.notes.toArray()
+  static async getAll() {
+    const notes = await db.notes.toArray()
+    return notes.filter(note => !note.isDelete)
   }
 
   static noteToDomSource(note: Note): DomSource {

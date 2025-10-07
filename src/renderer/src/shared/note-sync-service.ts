@@ -269,21 +269,31 @@ export class NoteSyncService {
       const s3Client = this.getS3Client()
       const key = this.noteKey(noteId)
       
-      // 先获取远程笔记，标记为删除后重新上传
+      // 获取本地笔记数据（应该已经标记为删除）
+      const localNote = await db.notes.get(noteId)
+      if (!localNote) {
+        console.warn(`Local note ${noteId} not found for deletion`)
+        return
+      }
+      
+      // 创建删除标记的笔记数据
+      const deletedNote: Note = {
+        ...localNote,
+        isDelete: localNote.isDelete || Date.now(),
+        updateTime: localNote.updateTime
+      }
+      
+      const payload: NoteSyncPayload = {
+        note: deletedNote,
+        assets: []
+      }
+      
+      // 上传标记为删除的笔记到远程
       try {
-        const content = await s3Client.getObject(key)
-        const payload: NoteSyncPayload = JSON.parse(content)
-        
-        // 标记为删除
-        payload.note.isDelete = Date.now()
-        payload.note.updateTime = Date.now()
-        
         await s3Client.putObject(key, JSON.stringify(payload), 'application/json')
+        console.log(`✅ Successfully marked remote note ${noteId} as deleted`)
       } catch (error) {
-        // 如果远程不存在，直接忽略
-        if (error instanceof Error && error.message.includes('not found')) {
-          return
-        }
+        console.error(`❌ Failed to mark remote note ${noteId} as deleted:`, error)
         throw error
       }
     } catch (error) {
