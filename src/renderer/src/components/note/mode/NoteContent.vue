@@ -53,7 +53,7 @@ const tags = TagAction.toTag(props.data.tag)
           </ul>
         </div>
       </div>
-      <div @click="emit('jump', data)" v-if="settingStore.isNoteShowClass">
+      <div @click="emit('jump', data)" v-if="settings.isNoteShowClass">
         <blockquote class="my-[1em]" :class="className">
           <p class="my-[0.6em] line-clamp-3" v-for="item in NoteAction.getDomSource(data?.domSource)">
             {{ item.text }}

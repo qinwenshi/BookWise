@@ -330,7 +330,6 @@ export class NoteSyncService {
 
   // 测试连接
   async testConnection(): Promise<boolean> {
-    const config = configManager.getConfig().sync
     if (!this.isConfigured()) {
       return false
     }

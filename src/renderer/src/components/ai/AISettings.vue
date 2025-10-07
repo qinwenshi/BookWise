@@ -103,6 +103,9 @@ watch(
   (newKey) => {
     if (newKey) {
       deepseekAPI.setApiKey(newKey)
+    } else {
+      // 如果密钥为空，也要刷新以确保获取最新状态
+      deepseekAPI.refreshApiKey()
     }
     connectionStatus.value = null
   },

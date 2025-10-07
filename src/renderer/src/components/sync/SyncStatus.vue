@@ -45,7 +45,7 @@
     </div>
 
     <!-- 最后同步时间 -->
-    <div v-if="lastSyncTime && showLastSync" class="text-xs text-base-content/60">
+    <div v-if="lastSyncTime && props.showLastSync" class="text-xs text-base-content/60">
       {{ formatLastSyncTime(lastSyncTime) }}
     </div>
   </div>

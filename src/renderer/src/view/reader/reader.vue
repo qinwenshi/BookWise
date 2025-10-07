@@ -136,9 +136,7 @@ async function catalogJump({ page, href }: any) {
   }
 }
 
-function test() {
-  recordPosition()
-}
+
 
 async function noteJump(note: Note) {
   const source = NoteAction.getDomSource(note.domSource)
@@ -514,7 +512,6 @@ onBeforeUnmount(() => {
             <div>
             </div>
             <div class="flex gap-4">
-              <button class="btn" @click="test()">test</button>
               <!-- 朗读书籍 -->
               <div class="indicator">
                 <span class="indicator-item badge badge-warning" v-if="!stateStore.isGood">VIP</span>

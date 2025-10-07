@@ -11,4 +11,9 @@ export const useAudio = () => {
     } else {
     }
   }
+
+  return {
+    audiosMap,
+    loadAudio
+  }
 }

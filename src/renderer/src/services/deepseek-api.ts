@@ -35,8 +35,17 @@ export class DeepseekAPI {
   }
 
   private getApiKeyFromSettings(): string {
-    // 从localStorage获取API密钥
-    return localStorage.getItem('deepseek_api_key') || ''
+    // 从新的配置管理器获取API密钥
+    try {
+      // 动态导入配置管理器以避免循环依赖
+      const { configManager } = require('@renderer/shared/config-manager')
+      const config = configManager.getConfig()
+      return config.ai.deepseek_api_key || ''
+    } catch (error) {
+      console.warn('无法从配置管理器获取API密钥，尝试从localStorage获取:', error)
+      // 回退到localStorage（兼容性）
+      return localStorage.getItem('deepseek_api_key') || ''
+    }
   }
 
   async chatStream(
@@ -170,7 +179,20 @@ export class DeepseekAPI {
   // 设置API密钥
   setApiKey(apiKey: string): void {
     this.apiKey = apiKey
-    // TODO: 保存到应用设置中
+    // 保存到配置管理器
+    try {
+      const { configManager } = require('@renderer/shared/config-manager')
+      configManager.updateAIConfig({ deepseek_api_key: apiKey })
+    } catch (error) {
+      console.warn('无法保存API密钥到配置管理器，尝试保存到localStorage:', error)
+      // 回退到localStorage（兼容性）
+      localStorage.setItem('deepseek_api_key', apiKey)
+    }
+  }
+
+  // 刷新API密钥（从配置中重新获取）
+  refreshApiKey(): void {
+    this.apiKey = this.getApiKeyFromSettings()
   }
 
   // 检查API密钥是否已配置

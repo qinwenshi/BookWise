@@ -44,7 +44,7 @@ initEdite()
 
       </div>
       <p class="py-4">{{ book.name }}</p>
-      <p v-if="settingStore.isOpenRecycleBin && !isRecycleBin" class="text-warning">{{ t('book.moveToRecycleBin') }}</p>
+      <p v-if="settings.isOpenRecycleBin && !isRecycleBin" class="text-warning">{{ t('book.moveToRecycleBin') }}</p>
       <p v-else class="text-warning">{{ t('book.forceRemove') }}</p>
       <div class="modal-action">
         <button class="btn btn-outline" @click="closeDialog">取消</button>

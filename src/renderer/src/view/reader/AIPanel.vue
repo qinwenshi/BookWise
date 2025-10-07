@@ -36,14 +36,14 @@
             :key="session.id"
             class="flex items-center justify-between p-2 rounded hover:bg-base-200 cursor-pointer"
             :class="{ 'bg-primary/10': currentSessionId === session.id }"
-            @click="loadSession(session.id)"
+            @click="session.id && loadSession(session.id)"
           >
             <div class="flex-1 min-w-0">
               <div class="text-xs font-medium truncate">{{ session.title }}</div>
               <div class="text-xs text-base-content/60">{{ formatTime(session.createdAt) }}</div>
             </div>
             <button 
-              @click.stop="deleteSession(session.id)"
+              @click.stop="session.id && deleteSession(session.id)"
               class="btn btn-ghost btn-xs text-error"
               title="删除会话"
             >
@@ -159,7 +159,7 @@ const contextText = ref('')
 const chatContainer = ref<HTMLElement>()
 
 // 会话管理
-const currentSessionId = ref<string | null>(null)
+const currentSessionId = ref<number | null>(null)
 const chatSessions = ref<ChatSession[]>([])
 const showHistory = ref(false)
 
@@ -196,7 +196,7 @@ const loadChatSessions = async () => {
   }
 }
 
-const loadSession = async (sessionId: string) => {
+const loadSession = async (sessionId: number) => {
   try {
     const session = await chatStorage.getSession(sessionId)
     if (session) {
@@ -218,7 +218,7 @@ const createNewSession = () => {
   showHistory.value = false
 }
 
-const deleteSession = async (sessionId: string) => {
+const deleteSession = async (sessionId: number) => {
   try {
     await chatStorage.deleteSession(sessionId)
     await loadChatSessions()
@@ -308,7 +308,6 @@ const sendMessage = async () => {
   }
 
   chatHistory.value.push(userMessage)
-  const currentInput = inputMessage.value
   inputMessage.value = ''
   isLoading.value = true
 
@@ -316,11 +315,11 @@ const sendMessage = async () => {
   scrollToBottom()
 
   // 调用AI API
-  await callDeepseekAPI(currentInput)
+  await callDeepseekAPI()
 }
 
 // 调用Deepseek API
-const callDeepseekAPI = async (message: string) => {
+const callDeepseekAPI = async () => {
   try {
     // 构建消息历史
     const messages = chatHistory.value.map(msg => ({

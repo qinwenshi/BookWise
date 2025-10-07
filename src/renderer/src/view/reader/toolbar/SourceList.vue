@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useSettings } from '@renderer/store/config';
 import { DomSource } from '@renderer/web-highlight';
-import { get, set } from '@vueuse/core';
+import { set } from '@vueuse/core';
 import { ref, watchEffect } from 'vue';
 
 const { settings } = useSettings()

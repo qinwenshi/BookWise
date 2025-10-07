@@ -28,7 +28,7 @@ export const convertBlobToUint8Array = async (blob?: Blob) => {
 }
 
 export const convertUint8ArrayToURL = (buffer: Uint8Array) => {
-  const blob = new Blob([buffer])
+  const blob = new Blob([buffer.buffer.slice(buffer.byteOffset, buffer.byteOffset + buffer.byteLength) as ArrayBuffer])
   return URL.createObjectURL(blob)
 }
 

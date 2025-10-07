@@ -108,7 +108,7 @@ export class S3Client {
   private async hmac(key: Uint8Array, message: string): Promise<Uint8Array> {
     const cryptoKey = await crypto.subtle.importKey(
       'raw',
-      key,
+      key.buffer.slice(key.byteOffset, key.byteOffset + key.byteLength) as ArrayBuffer,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']
