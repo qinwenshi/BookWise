@@ -873,8 +873,11 @@ class Loader {
   }
 }
 
-const getHTMLFragment = (doc, id) =>
-  doc.getElementById(id) ?? doc.querySelector(`[name="${CSS.escape(id)}"]`)
+const getHTMLFragment = (doc, id) => {
+  // 如果传入的是 HTML 元素而不是文档对象，获取其 ownerDocument
+  const document = doc.ownerDocument || doc
+  return document.getElementById(id) ?? document.querySelector(`[name="${CSS.escape(id)}"]`)
+}
 
 const getPageSpread = (properties) => {
   for (const p of properties) {
@@ -1053,7 +1056,7 @@ ${doc.querySelector('parsererror').innerText}`)
     if (!item) return null
 
     const index = this.resources.spine.findIndex(({ idref }) => idref === item.id)
-    const anchor = hash ? (doc) => doc.querySelector(`#${hash}`) : () => null
+    const anchor = hash ? (doc) => getHTMLFragment(doc, hash) : () => null
     return { index, anchor }
   }
 
