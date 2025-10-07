@@ -200,7 +200,7 @@ const throttleClick = useThrottleFn((val: Note) => {
           <div class="relative w-full" :style="{ height: `${totalSize}px` }" v-if="notes.length">
             <div class="absolute top-0 left-0 w-full "
               :style="{ transform: `translateY(${virtualRows[0]?.start ?? 0}px)` }">
-              <div v-for="virtualRow in virtualRows" :key="virtualRow.key" class="note-item"
+              <div v-for="virtualRow in virtualRows" :key="String(virtualRow.key)" class="note-item"
                 :data-index="virtualRow.index" :ref="measureElement">
                 <div class="card bg-base-200 rounded-md cursor-pointer mb-3 "
                   :class="[hoverIndex === virtualRow.index ? 'bg-info text-info-content' : '']"

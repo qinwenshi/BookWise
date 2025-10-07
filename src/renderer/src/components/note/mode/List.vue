@@ -56,7 +56,7 @@ const jump = (value: Note) => NoteAction.jumpToBook(value)
 <template>
   <div ref="parentRef" class="p-6 flex justify-center h-full overflow-auto scrollbar-thin">
     <div class="relative w-full md:w-[40rem]" :style="{ height: `${totalSize}px`, }">
-      <template v-for="virtualRow in virtualRows" :key="virtualRow.key">
+      <template v-for="virtualRow in virtualRows" :key="String(virtualRow.key)">
         <div :ref="measureElement" :data-index="virtualRow.index" class="flex gap-4 absolute top-0 left-0  w-full pb-5"
           :style="{ transform: `translateY(${virtualRow.start - rowVirtualizer.options.scrollMargin}px)` }">
           <Card :data="data[virtualRow.index]" @delete="removeBefore" @detail="onDetail" @jump="jump" />

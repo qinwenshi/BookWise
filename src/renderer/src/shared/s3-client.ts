@@ -193,7 +193,7 @@ export class S3Client {
         ...signResult.headers,
         'Authorization': signResult.authorization
       },
-      body: body
+      body: body as BodyInit
     })
 
     if (!response.ok) {

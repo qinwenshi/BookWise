@@ -5,9 +5,9 @@ export const useAudio = () => {
   const audiosMap = new Map<string, BookAudio>()
 
   async function loadAudio(bookId: string, voice: string) {
-    const loacl = await BookAudioAction.findByBookIdAndVoice(bookId, voice)
-    if (loacl) {
-      audiosMap.set(bookId, loacl)
+    const local = await BookAudioAction.findByBookIdAndVoice(bookId, voice)
+    if (local) {
+      audiosMap.set(bookId, local)
     } else {
     }
   }

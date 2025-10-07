@@ -244,7 +244,7 @@ onKeyStroke(['ArrowDown'], littleNextView)
     <div class="relative w-full" :style="{ height: `${totalSize}px` }">
       <div class="absolute top-0 left-0 w-full " :style="{ transform: `translateY(${virtualRows[0]?.start ?? 0}px)` }"
         id="scrollConatinerWise">
-        <div v-for="virtualRow in virtualRows" :key="virtualRow.key" :data-index="virtualRow.index"
+        <div v-for="virtualRow in virtualRows" :key="String(virtualRow.key)" :data-index="virtualRow.index"
           :data-page-number="virtualRow.index" :ref="measureElement" class="prose mx-auto my-0 mb-12 prose-width">
           <SectionView :index="virtualRow.index" @link-click="linkClick">
           </SectionView>

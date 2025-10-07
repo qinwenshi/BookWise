@@ -191,7 +191,7 @@ initEdite()
       <div class="min-h-20 flex-1 flex flex-col gap-4 overflow-auto scrollbar-thin" ref="containerRef"
         :style="{ height: `${totalSize}px` }">
         <ul class="menu bg-base-200 rounded-box" v-if="searchedList.length">
-          <li v-for="virtualRow in virtualRows" :key="virtualRow.key" :ref="measureElement"
+          <li v-for="virtualRow in virtualRows" :key="String(virtualRow.key)" :ref="measureElement"
             :data-index="virtualRow.index">
             <h2 class=" font-black" v-if="(searchedList[virtualRow.index] as Title).name">
               {{ (searchedList[virtualRow.index] as Title).name }}

@@ -72,7 +72,7 @@ const measureElement = (el: HTMLElement) => {
   <div class="relative w-full" ref="containerRef" :style="{
     height: `${totalSize}px`,
   }">
-    <div v-for="virtualRow in virtualRows" :key="virtualRow.key" :ref="measureElement" :data-index="virtualRow.index"
+    <div v-for="virtualRow in virtualRows" :key="String(virtualRow.key)" :ref="measureElement" :data-index="virtualRow.index"
       class="absolute top-0 left-0  w-full pb-10" :style="{
         transform: `translateY(${virtualRow.start - rowVirtualizer.options.scrollMargin
           }px)`,
