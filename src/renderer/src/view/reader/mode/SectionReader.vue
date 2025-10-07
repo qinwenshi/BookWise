@@ -283,8 +283,8 @@ onKeyStroke(['ArrowDown'], littleNextView)
 
 <template>
   <!-- 书籍内容 -->
-  <div class=" bg-base-100 h-full cursor-pointer  overflow-auto scrollbar-thin scroll-smooth" ref="containerRef"
-    :id="CONTINAER_ID">
+  <div class=" bg-base-100 h-full cursor-pointer  overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 scroll-smooth" 
+    style="scrollbar-gutter: stable both;" ref="containerRef" :id="CONTINAER_ID">
     <div class="prose mx-auto my-0 prose-width" :data-page-number="currentPage" id="scrollConatinerWise">
       <div class="py-8">
         <button class="btn btn-active btn-neutral" @click="prevSection">上一章</button>

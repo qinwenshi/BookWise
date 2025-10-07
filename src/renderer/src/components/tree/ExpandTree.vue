@@ -31,8 +31,11 @@ const isActive = (item: any, active: number | string) => {
 <template>
   <ul :class="{ 'menu': deps === 0 }">
     <li v-for="item in data" :key="item.herf" @click.stop="handleClick(item)">
-      <a class="whitespace-normal" :class="{ active: isActive(item, active) }">{{ item.label
-        }}</a>
+      <a class="whitespace-normal leading-relaxed py-2 px-3 min-h-[2.5rem] flex items-center" 
+         :class="{ active: isActive(item, active) }" 
+         :title="item.label">
+        <span class="block w-full">{{ item.label }}</span>
+      </a>
       <template v-if="item.subitems && item.subitems.length > 0">
         <ExpandTreeView :data="item.subitems" :active="active" :deps="deps + 1" @click="handleClick" />
       </template>

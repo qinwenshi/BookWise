@@ -240,7 +240,8 @@ onKeyStroke(['ArrowDown'], littleNextView)
 
 <template>
   <!-- 书籍内容 -->
-  <div class=" bg-base-100 h-full cursor-pointer  overflow-auto  scrollbar-thin" ref="containerRef">
+  <div class=" bg-base-100 h-full cursor-pointer  overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400" 
+    style="scrollbar-gutter: stable both;" ref="containerRef">
     <div class="relative w-full" :style="{ height: `${totalSize}px` }">
       <div class="absolute top-0 left-0 w-full " :style="{ transform: `translateY(${virtualRows[0]?.start ?? 0}px)` }"
         id="scrollConatinerWise">

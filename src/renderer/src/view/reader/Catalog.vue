@@ -25,7 +25,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="catalog-wrapper bg-base-100 overflow-auto hover:scrollbar-thin scrollbar-none" ref="container">
+  <div class="catalog-wrapper bg-base-100 overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400" ref="container" style="scrollbar-gutter: stable both;">
     <!-- <FoldTreeView :data="data" v-if="settingStore.isFoldCatalog" /> -->
     <ExpandTreeView :data="bookToc" :active="bookPageStore.page" @click="handleClick" />
   </div>
@@ -49,4 +49,6 @@ watchEffect(() => {
 .catalog-wrapper.hide {
   margin-inline-start: calc(var(--catalog-bar-width)* -1);
 }
+
+
 </style>

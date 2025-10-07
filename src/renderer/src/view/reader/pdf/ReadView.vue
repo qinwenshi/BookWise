@@ -60,7 +60,8 @@ const scroll = useDebounceFn(() => {
 
 <template>
   <div id="viewerContainer" ref="PDFContainerRef"
-    class="h-full w-full bg-base-200  absolute overflow-auto scroll-smooth scrollbar-thin" @scroll="scroll">
+    class="h-full w-full bg-base-200  absolute overflow-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400" 
+    style="scrollbar-gutter: stable both;" @scroll="scroll">
     <div ref="contentRef" id="viewer" class="pdfViewer scrollWrapped">
     </div>
   </div>

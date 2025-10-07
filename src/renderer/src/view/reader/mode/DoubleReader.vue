@@ -339,7 +339,8 @@ function linkClick(href: string) {
         <RingLoadingView v-if="isLoading" class="rounded-3xl" />
         <template v-else>
           <div ref="containerRef" :data-page-number="currentPage"
-            class="columns-1 scroll-smooth transition ease-in-out lg:columns-2 gap-x-16 h-full overflow-auto p-8 pb-12 double-container relative">
+            class="columns-1 scroll-smooth transition ease-in-out lg:columns-2 gap-x-16 h-full overflow-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400 p-8 pb-12 double-container relative"
+            style="scrollbar-gutter: stable both;">
             <SectionView :key="currentPage" :loaded="sectionLoaded" :noteLoaded="noteLoaded" :index="currentPage"
               @link-click="linkClick">
             </SectionView>

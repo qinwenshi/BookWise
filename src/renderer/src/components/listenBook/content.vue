@@ -375,11 +375,12 @@ onUnmounted(() => {
     <template v-else>
       <div class="flex-1  h-full overflow-hidden">
         <div class="flex flex-row h-full overflow-hidden">
-          <div class="catalog-wrapper bg-base-100 overflow-auto hover:scrollbar-thin scrollbar-none" ref="catalogRef">
+          <div class="catalog-wrapper bg-base-100 overflow-auto scrollbar-none hover:scrollbar-thin hover:scrollbar-track-transparent hover:scrollbar-thumb-gray-400" 
+            style="scrollbar-gutter: stable" ref="catalogRef">
             <ExpandTreeView :data="toc" :active="activePage" @click="onCatalog" />
           </div>
-          <div class="prose px-2 w-full max-w-full overflow-auto hover:scrollbar-thin scrollbar-none cursor-pointer"
-            ref="contentRef">
+          <div class="prose px-2 w-full max-w-full overflow-auto scrollbar-none hover:scrollbar-thin hover:scrollbar-track-transparent hover:scrollbar-thumb-gray-400 cursor-pointer"
+            style="scrollbar-gutter: stable" ref="contentRef">
             <p v-for="item, index in textList" class="px-2 rounded"
               :class="[index === activeText ? 'selection-info' : 'hover:bg-base-300/60']"
               @click="changeActiveSentence(index)">{{ item }}</p>
