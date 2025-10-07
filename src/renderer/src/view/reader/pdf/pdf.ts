@@ -18,7 +18,7 @@ import {
 
 import { NoteAction } from '@renderer/components'
 import { ReadMode } from '@renderer/data'
-import { settingStore } from '@renderer/store'
+import { useSettings } from '@renderer/store/config'
 
 // import {
 //   EventBus,
@@ -44,6 +44,7 @@ class PDFTool {
     this.bookId = bookId
     return new Promise(async (resolve, reject) => {
       try {
+        const { settings } = useSettings()
         const container = $(`#viewerContainer`) as HTMLDivElement
         const eventBus = new EventBus()
 
@@ -61,7 +62,7 @@ class PDFTool {
           // l10n
         })
 
-        view.currentScale = settingStore.value.pdfScale
+        view.currentScale = settings.pdfScale
 
         linkService.setViewer(view)
 
@@ -84,7 +85,7 @@ class PDFTool {
 
         eventBus.on('pagesloaded', () => {
           view.currentScaleValue = 'auto'
-          setSpreadMode(settingStore.value.readMode)
+          setSpreadMode(settings.readMode as ReadMode)
           resolve('')
         })
       } catch (error) {

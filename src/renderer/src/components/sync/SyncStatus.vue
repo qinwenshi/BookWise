@@ -53,7 +53,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { R2ConfigManager } from '@renderer/shared/r2-config'
+import { useSyncConfig } from '@renderer/store/config'
 import { NoteSyncService } from '@renderer/shared/note-sync-service'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -108,10 +108,12 @@ const formatLastSyncTime = (timestamp: number) => {
   return dayjs(timestamp).format('MM-DD HH:mm')
 }
 
+const { syncConfig, isConfigured: checkConfigured } = useSyncConfig()
+
 const updateStatus = () => {
-  isConfigured.value = R2ConfigManager.isConfigured()
-  isEnabled.value = R2ConfigManager.config.isEnabled
-  lastSyncTime.value = R2ConfigManager.getLastSyncTime()
+  isConfigured.value = checkConfigured()
+  isEnabled.value = syncConfig.r2_is_enabled
+  lastSyncTime.value = syncConfig.r2_last_sync_time
   isSyncing.value = NoteSyncService.getInstance().isSyncInProgress()
 }
 

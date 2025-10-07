@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Note } from '@renderer/batabase';
 import { t } from '@renderer/data';
-import { settingStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import dayjs from 'dayjs';
 import { BellElectric, Ellipsis, Trash2 } from 'lucide-vue-next';
 import { computed, defineProps, ref } from 'vue';
@@ -17,9 +17,10 @@ const emit = defineEmits<{
   (e: 'jump', data: Note): void,
 }>()
 
+const { settings } = useSettings()
 const getColorName = (val?: string) => NoteAction.getDomSource(val)[0]?.className || ''
 
-const className = ref(settingStore.value.isNoteShowClass ? getColorName(props.data.domSource) : '')
+const className = ref(settings.isNoteShowClass ? getColorName(props.data.domSource) : '')
 
 const noteText = computed(() => NoteAction.getNoteText(props.data.notes).reduce((acc, cur) => (acc += cur.value), ''))
 

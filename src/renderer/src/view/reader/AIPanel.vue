@@ -295,7 +295,13 @@ const sendMessage = async () => {
   // 保存用户消息到数据库
   if (currentSessionId.value) {
     try {
-      await chatStorage.addMessageToSession(currentSessionId.value, userMessage)
+      // 创建纯净的消息对象副本，确保序列化安全
+      const cleanUserMessage: ChatMessage = {
+        role: userMessage.role,
+        content: userMessage.content,
+        timestamp: userMessage.timestamp
+      }
+      await chatStorage.addMessageToSession(currentSessionId.value, cleanUserMessage)
     } catch (error) {
       console.error('保存用户消息失败:', error)
     }
@@ -371,7 +377,14 @@ const callDeepseekAPI = async (message: string) => {
           if (currentSessionId.value) {
             try {
               const lastMessage = chatHistory.value[chatHistory.value.length - 1]
-              await chatStorage.addMessageToSession(currentSessionId.value, lastMessage)
+              // 创建纯净的消息对象副本，避免Vue响应式属性导致的序列化问题
+              const cleanMessage: ChatMessage = {
+                role: lastMessage.role,
+                content: lastMessage.content,
+                thinking: lastMessage.thinking,
+                timestamp: lastMessage.timestamp
+              }
+              await chatStorage.addMessageToSession(currentSessionId.value, cleanMessage)
             } catch (error) {
               console.error('保存AI消息失败:', error)
             }

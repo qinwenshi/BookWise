@@ -1,7 +1,7 @@
 import { Book } from '@renderer/batabase'
 import { NoteAction, NoteText } from '@renderer/components'
 import { $, getNoteOffset } from '@renderer/shared'
-import { settingStore } from '@renderer/store'
+import { useSettings } from '@renderer/store/config'
 import { CreateFrom, EventTypeEnum, WebHighlight } from '@renderer/web-highlight'
 import { get } from '@vueuse/core'
 import { watchEffect } from 'vue'
@@ -15,16 +15,18 @@ export const CONTINAER_ID = 'reader-container'
 const getRoot = () => $('#' + CONTINAER_ID) as HTMLElement
 
 export function initHighlight(book: Book) {
+  const { settings } = useSettings()
+  
   highlighter = new WebHighlight({
     tagName: 'span',
     className: highlightColor.getClassName(),
     root: getRoot() || Document,
     showError: true,
-    auto: settingStore.value.isAutoHighlight
+    auto: settings.isAutoHighlight
   })
 
   watchEffect(() => {
-    const auto = settingStore.value.isAutoHighlight
+    const auto = settings.isAutoHighlight
     highlighter?.setOption({ auto })
   })
 

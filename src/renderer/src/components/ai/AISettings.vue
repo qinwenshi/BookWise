@@ -78,32 +78,40 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { Bot, Eye, EyeOff, Zap, CheckCircle, XCircle, Info } from 'lucide-vue-next'
 import { deepseekAPI } from '../../services/deepseek-api'
+import { useAIConfig } from '../../store/config'
 
-const apiKey = ref('')
+const { aiConfig, updateAIConfig } = useAIConfig()
+
 const showApiKey = ref(false)
 const testing = ref(false)
 const connectionStatus = ref<'success' | 'error' | null>(null)
 
-// 从本地存储加载API密钥
-onMounted(() => {
-  const savedApiKey = localStorage.getItem('deepseek_api_key')
-  if (savedApiKey) {
-    apiKey.value = savedApiKey
-    deepseekAPI.setApiKey(savedApiKey)
+// 使用计算属性来绑定API密钥
+const apiKey = computed({
+  get: () => aiConfig.deepseek_api_key,
+  set: (value: string) => {
+    updateAIConfig('deepseek_api_key', value)
   }
 })
 
-// 保存API密钥
+// 监听API密钥变化，自动设置到deepseekAPI
+watch(
+  () => aiConfig.deepseek_api_key,
+  (newKey) => {
+    if (newKey) {
+      deepseekAPI.setApiKey(newKey)
+    }
+    connectionStatus.value = null
+  },
+  { immediate: true }
+)
+
+// 保存API密钥（现在通过配置管理器自动保存）
 const saveApiKey = () => {
-  if (apiKey.value) {
-    localStorage.setItem('deepseek_api_key', apiKey.value)
-    deepseekAPI.setApiKey(apiKey.value)
-  } else {
-    localStorage.removeItem('deepseek_api_key')
-  }
+  // 配置会自动保存，这里只需要重置连接状态
   connectionStatus.value = null
 }
 

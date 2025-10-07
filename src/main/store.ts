@@ -35,11 +35,44 @@ const schemaSetting: SettingState = {
   fontFamily: 'fzjzxf'
 }
 
-const store: any = new Store<{ setting: SettingState }>({
-  defaults: { setting: schemaSetting },
+// 扩展Store接口以支持新的配置系统
+interface StoreSchema {
+  setting: SettingState
+  config: string // 新的统一配置（JSON字符串）
+}
+
+const store: any = new Store<StoreSchema>({
+  defaults: { 
+    setting: schemaSetting,
+    config: '' // 新配置系统的默认值
+  },
   migrations: {
     '0.0.2': (store) => {
       store.set('setting.listenMode', schemaSetting.listenMode)
+    },
+    '1.0.0': (store) => {
+      // 迁移到新的配置系统
+      const oldSetting = store.get('setting')
+      if (oldSetting && !store.get('config')) {
+        // 如果有旧配置但没有新配置，则进行迁移
+        const newConfig = {
+          version: '1.0.0',
+          settings: oldSetting,
+          ai: {
+            deepseek_api_key: ''
+          },
+          sync: {
+            r2_account_id: '',
+            r2_access_key_id: '',
+            r2_secret_access_key: '',
+            r2_bucket_name: '',
+            r2_last_sync_time: 0,
+            r2_is_enabled: false
+          },
+          lastUpdated: Date.now()
+        }
+        store.set('config', JSON.stringify(newConfig))
+      }
     }
   },
   watch: true

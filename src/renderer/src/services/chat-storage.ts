@@ -32,17 +32,8 @@ const db = new ChatDatabase()
 
 export class ChatStorageService {
   // 创建新的聊天会话
-  async createSession(title: string, context?: string, bookId?: string): Promise<number> {
-    const session: ChatSession = {
-      title,
-      messages: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-      bookId,
-      context
-    }
-    
-    return await db.chatSessions.add(session)
+  async createSession(sessionData: Omit<ChatSession, 'id'>): Promise<number> {
+    return await db.chatSessions.add(sessionData)
   }
 
   // 获取所有聊天会话

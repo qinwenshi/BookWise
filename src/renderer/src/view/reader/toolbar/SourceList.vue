@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { settingStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { DomSource } from '@renderer/web-highlight';
 import { get, set } from '@vueuse/core';
 import { ref, watchEffect } from 'vue';
+
+const { settings } = useSettings()
 
 const porps = withDefaults(defineProps<{
   data: DomSource[],
@@ -23,7 +25,7 @@ const setName = () => set(_className, porps.data[0].className)
 const removeName = () => set(_className, '')
 
 const onMouseEnter = () => {
-  const show = get(settingStore).isNoteShowClass
+  const show = settings.isNoteShowClass
   if (show) {
     setName()
     return
@@ -33,7 +35,7 @@ const onMouseEnter = () => {
 }
 
 const onMouseLeave = () => {
-  const show = get(settingStore).isNoteShowClass
+  const show = settings.isNoteShowClass
   if (show) {
     setName()
     return
@@ -46,7 +48,7 @@ const onMouseLeave = () => {
 }
 
 watchEffect(() => {
-  const show = get(settingStore).isNoteShowClass
+  const show = settings.isNoteShowClass
   if (show) {
     setName()
   } else {

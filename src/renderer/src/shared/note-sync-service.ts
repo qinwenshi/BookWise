@@ -1,7 +1,7 @@
 import { Note, db } from '@renderer/batabase'
 import { toastError, toastSuccess } from '@renderer/shared'
-import { R2ConfigManager } from './r2-config'
 import { S3Client } from './s3-client'
+import { configManager } from './config-manager'
 
 export interface NoteSyncPayload {
   note: Note
@@ -56,7 +56,8 @@ export class NoteSyncService {
   }
 
   async uploadNote(note: Note): Promise<void> {
-    if (!R2ConfigManager.isEnabled()) {
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
       return
     }
 
@@ -82,12 +83,13 @@ export class NoteSyncService {
   }
 
   async uploadLocalChanges(): Promise<number> {
-    if (!R2ConfigManager.isEnabled()) {
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
       return 0
     }
 
     try {
-      const lastSyncTime = R2ConfigManager.getLastSyncTime()
+      const lastSyncTime = config.sync.r2_last_sync_time
       console.log(`🔍 [同步调试] lastSyncTime: ${lastSyncTime} (${new Date(lastSyncTime).toLocaleString()})`)
       
       // 获取所有笔记用于调试
@@ -134,13 +136,14 @@ export class NoteSyncService {
   }
 
   async downloadRemoteChanges(): Promise<number> {
-    if (!R2ConfigManager.isEnabled()) {
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
       return 0
     }
 
     try {
       const s3Client = this.getS3Client()
-      const lastSyncTime = R2ConfigManager.getLastSyncTime()
+      const lastSyncTime = config.sync.r2_last_sync_time
       console.log(`🔍 [下载调试] lastSyncTime: ${lastSyncTime} (${new Date(lastSyncTime).toLocaleString()})`)
       
       // 列出所有远程笔记
@@ -215,8 +218,9 @@ export class NoteSyncService {
   }
 
   async sync(): Promise<SyncResult> {
-    if (!R2ConfigManager.isEnabled()) {
-      throw new Error('R2 sync is not enabled or configured')
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
+      throw new Error('R2 同步未启用或未配置')
     }
 
     if (this.isSyncing) {
@@ -244,7 +248,7 @@ export class NoteSyncService {
       }
 
       // 更新最后同步时间
-      R2ConfigManager.setLastSyncTime(Date.now())
+      configManager.updateSyncConfig({ r2_last_sync_time: Date.now() })
 
       const result: SyncResult = { uploaded, downloaded, errors }
       
@@ -261,7 +265,8 @@ export class NoteSyncService {
   }
 
   async deleteNote(noteId: string): Promise<void> {
-    if (!R2ConfigManager.isEnabled()) {
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
       return
     }
 
@@ -304,7 +309,8 @@ export class NoteSyncService {
 
   // 手动触发单个笔记同步
   async syncNote(note: Note): Promise<void> {
-    if (!R2ConfigManager.isEnabled()) {
+    const config = configManager.getConfig()
+    if (!config.sync.r2_is_enabled || !this.isConfigured()) {
       return
     }
 
@@ -324,16 +330,9 @@ export class NoteSyncService {
 
   // 测试连接
   async testConnection(): Promise<boolean> {
-    const config = R2ConfigManager.config
-    console.log('Testing connection with config:', {
-      accountId: config.accountId,
-      bucketName: config.bucketName,
-      accessKeyId: config.accessKeyId,
-      hasSecretKey: !!config.secretAccessKey
-    })
-    
-    if (!config.accountId || !config.bucketName || !config.accessKeyId || !config.secretAccessKey) {
-      throw new Error('Configuration incomplete. Please fill in all required fields.')
+    const config = configManager.getConfig().sync
+    if (!this.isConfigured()) {
+      return false
     }
 
     try {
@@ -369,5 +368,15 @@ export class NoteSyncService {
         throw new Error('Connection failed: Unknown error occurred')
       }
     }
+  }
+
+  private isConfigured(): boolean {
+    const config = configManager.getConfig().sync
+    return !!(
+      config.r2_account_id &&
+      config.r2_access_key_id &&
+      config.r2_secret_access_key &&
+      config.r2_bucket_name
+    )
   }
 }

@@ -5,15 +5,18 @@ import { watchEffect } from 'vue';
 import { BookAction, BookReadTimeAction, BookshelfAction, NoteAction, TagAction } from './components';
 import { setI18nLanguage } from './data';
 import './dayjs';
-import { bookPositionStore, bookReadTimeStore, settingStore, useBookshelfStore, useBookStore, useNoteStore, useTagStore } from './store';
+import { bookPositionStore, bookReadTimeStore, useBookshelfStore, useBookStore, useNoteStore, useTagStore } from './store';
+import { useSettings } from './store/config';
+
+const { settings } = useSettings()
 
 watchEffect(() => {
-  const theme = settingStore.value.theme
+  const theme = settings.theme
   document.querySelector('html')?.setAttribute('data-theme', theme)
 })
 
 watchEffect(() => {
-  const lang = settingStore.value.lang
+  const lang = settings.lang
   setI18nLanguage(lang)
 })
 

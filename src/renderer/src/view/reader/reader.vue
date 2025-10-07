@@ -5,7 +5,8 @@ import { fonts, ReadMode, t, themes } from '@renderer/data';
 import { BookRender, cahceRefreshBook, renderBook } from '@renderer/hooks';
 import { $, $$, getInterval, now, toastSuccess, toastWarning } from '@renderer/shared';
 import { isReload } from '@renderer/shared/navigation';
-import { bookPositionStore, bookReadTimeStore, settingStore, useBookPageStore, useBookStore, useUserStore } from '@renderer/store';
+import { bookPositionStore, bookReadTimeStore, useBookPageStore, useBookStore, useUserStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { get, set, useCssVar, useToggle, useWindowSize } from '@vueuse/core';
 import { AArrowDown, AArrowUp, AlignJustify, Bolt, Headset, SkipBack, ZoomIn, ZoomOut } from 'lucide-vue-next';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watchEffect } from 'vue';
@@ -51,9 +52,11 @@ const [isLoading, setLoading] = useToggle(false)
 const { width } = useWindowSize(); // 适配不能尺寸窗口
 const isSM = computed(() => width.value < 1024);
 
+const { settings } = useSettings()
+
 // 根据主题动态设置文本选择样式
 const selectionClasses = computed(() => {
-  if (settingStore.value.theme === 'retro') {
+  if (settings.theme === 'retro') {
     return 'selection:bg-blue-200/40 selection:text-blue-900'
   }
   return 'selection:bg-info selection:text-base-content'
@@ -62,7 +65,7 @@ const selectionClasses = computed(() => {
 const { isLG: isCatalog, toggleDrawer: toggleCatalog } = useToggleDrawer(); // 控制目录是否显示
 const { isLG: isNote, toggleDrawer: toggleNote } = useToggleDrawer() // 控制笔记是否显示
 
-const readMode = ref(settingStore.value.readMode) // 阅读模式
+const readMode = ref(settings.readMode) // 阅读模式
 const scrollReaderViewRef = ref<InstanceType<typeof ScrollReaderView>>() // 滚动视图
 const sectionReaderViewRef = ref<InstanceType<typeof SectionReaderView>>() // 章节视图
 const doubleReaderViewRef = ref<InstanceType<typeof DoubleReaderView>>() // 双栏视图
@@ -102,7 +105,7 @@ async function loadData() {
       localStorage.removeItem('__note__')
     } else {
       // 恢复上次阅读位置
-      if (settingStore.value.isRemeberPosition) {
+      if (settings.isRemeberPosition) {
         restorePostion()
       }
     }
@@ -159,7 +162,7 @@ async function noteJump(note: Note) {
 }
 
 // 返回
-const showBack = ref(router.options.routes.length > 1 && !settingStore.value.isOpenNew)
+const showBack = ref(router.options.routes.length > 1 && !settings.isOpenNew)
 function goBack() {
   router.go(-1)
 }
@@ -211,7 +214,7 @@ function zoomOut() {
   }
 }
 watchEffect(async () => {
-  const mode = settingStore.value.readMode
+  const mode = settings.readMode
   if (mode === ReadMode.double) {
     set(zoomSize, `${65 * 2}ch`)
   }
@@ -231,7 +234,7 @@ const lineHeight = useCssVar('--prose-line-height', document.documentElement)
 // 字体族设置
 const fontFamily = useCssVar('--prose-font-family', document.documentElement)
 watchEffect(() => {
-  const selectedFont = fonts.find(font => font.id === settingStore.value.fontFamily)
+  const selectedFont = fonts.find(font => font.id === settings.fontFamily)
   if (selectedFont) {
     if (selectedFont.id === 'system') {
       set(fontFamily, selectedFont.value)
@@ -367,17 +370,30 @@ const startTime = ref(0);
 const endTime = ref(0)
 const readTime = computed(() => getInterval(get(startTime), get(endTime)))
 let timer: NodeJS.Timeout | null = null
+const isMounted = ref(false)
 
-const startReading = () => set(startTime, now())
-const endReading = () => set(endTime, now())
+const startReading = () => {
+  if (isMounted.value) {
+    set(startTime, now())
+  }
+}
+
+const endReading = () => {
+  if (isMounted.value && endTime.value !== null) {
+    set(endTime, now())
+  }
+}
 
 function resetReadTime() {
   if (timer) {
     clearInterval(timer)
+    timer = null
   }
-  timer = setInterval(endReading, 1000 * 60)
-  startReading()
-  endReading()
+  if (isMounted.value) {
+    timer = setInterval(endReading, 1000 * 60)
+    startReading()
+    endReading()
+  }
 }
 
 function recordReadTime() {
@@ -432,6 +448,7 @@ function recordAction() {
 
 
 onMounted(() => {
+  isMounted.value = true
   loadData()
   resetReadTime()
   // 监听 浏览器窗口关闭、刷新
@@ -441,13 +458,15 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  isMounted.value = false
+  if (timer) {
+    clearInterval(timer)
+    timer = null
+  }
   recordAction()
   window.removeEventListener("beforeunload", recordAction);
   window.removeEventListener('blur', recordReadTime)
   document.removeEventListener('visibilitychange', viewVisibityChange)
-  if (timer) {
-    clearInterval(timer)
-  }
   BookRender.clear()
   highlighter?.dispose()
 })
@@ -540,11 +559,11 @@ onBeforeUnmount(() => {
                       <DropdownView summary-class="flex flex-row justify-between w-72 dropdown-left px-4 py-2">
                         <template v-slot:summary>
                           <span class="stat-title">{{ t('setting.theme') }}</span>
-                          <div class="badge badge-outline">{{ settingStore.theme }}</div>
+                          <div class="badge badge-outline">{{ settings.theme }}</div>
                         </template>
                         <List
                           class="dropdown-content !top-0 !right-[18.5rem]  !border-secondary  rounded-s-lg rounded-ee-lg z-[2] w-52"
-                          :list="themes" v-model="settingStore.theme" />
+                          :list="themes" v-model="settings.theme" />
                       </DropdownView>
                     </a>
                   </li>
@@ -554,11 +573,11 @@ onBeforeUnmount(() => {
                       <DropdownView summary-class="flex flex-row justify-between w-72 dropdown-left px-4 py-2">
                         <template v-slot:summary>
                           <span class="stat-title">{{ t('setting.readMode') }}</span>
-                          <div class="badge badge-outline">{{ getSelectReadMode(settingStore.readMode) }}</div>
+                          <div class="badge badge-outline">{{ getSelectReadMode(settings.readMode) }}</div>
                         </template>
                         <List
                           class="dropdown-content !top-0 !right-[18.5rem]  !border-secondary  rounded-s-lg rounded-ee-lg z-[2] w-52"
-                          :list="readModeList" v-model="settingStore.readMode" />
+                          :list="readModeList" v-model="settings.readMode" />
                       </DropdownView>
                     </a>
                   </li> -->

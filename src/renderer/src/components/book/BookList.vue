@@ -4,7 +4,8 @@ import { FileUploadView } from '@renderer/components';
 import { BookshelftMode, t } from '@renderer/data';
 import { listenBookJump, useRightClick } from '@renderer/hooks';
 import { sort, toastSuccess } from '@renderer/shared';
-import { bookSortStore, settingStore, useBookFilterStore } from '@renderer/store';
+import { bookSortStore, useBookFilterStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { vOnClickOutside } from '@vueuse/components';
 import { get, set } from '@vueuse/core';
 import { BellElectric, Headset, Heart, HeartOff, PencilLine, Plus, SquareLibrary, Star, Trash2, UndoDot } from 'lucide-vue-next';
@@ -33,7 +34,8 @@ const emit = defineEmits<{
 }>();
 
 const filterStore = useBookFilterStore()
-const bookMode = (value: BookshelftMode) => value === settingStore.value.bookshelf
+const { settings } = useSettings()
+const bookMode = (value: BookshelftMode) => value === settings.bookshelf
 
 const sortByReadTime = async (data: Book[], isUp: boolean) => {
   const allReadTime = await BookReadTimeAction.getAll()

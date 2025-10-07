@@ -1,4 +1,11 @@
-import { R2ConfigManager } from './r2-config'
+import { configManager } from './config-manager'
+
+export interface S3Config {
+  endpoint: string
+  accessKeyId: string
+  secretAccessKey: string
+  bucketName: string
+}
 
 export interface S3Object {
   key: string
@@ -17,10 +24,12 @@ export class S3Client {
   private bucketName: string
 
   constructor() {
-    this.endpoint = R2ConfigManager.getEndpoint()
-    this.accessKeyId = R2ConfigManager.getAccessKeyId()
-    this.secretAccessKey = R2ConfigManager.getSecretAccessKey()
-    this.bucketName = R2ConfigManager.getBucketName()
+    const config = configManager.getConfig()
+    const accountId = config.sync.r2_account_id
+    this.endpoint = accountId ? `https://${accountId}.r2.cloudflarestorage.com` : ''
+    this.accessKeyId = config.sync.r2_access_key_id
+    this.secretAccessKey = config.sync.r2_secret_access_key
+    this.bucketName = config.sync.r2_bucket_name
     
     console.log('S3Client initialized with:', {
       endpoint: this.endpoint,

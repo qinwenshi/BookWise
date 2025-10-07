@@ -2,7 +2,7 @@
 import { Book } from '@renderer/batabase';
 import { t } from '@renderer/data';
 import { useDialog } from '@renderer/hooks';
-import { settingStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { vOnClickOutside } from '@vueuse/components';
 import { nextTick } from 'vue';
 import { BookAction } from '../action';
@@ -10,6 +10,7 @@ import { BookAction } from '../action';
 const props = defineProps<{ book: Book, isRecycleBin: boolean, isForce: boolean }>()
 
 const { dialogRef, openDialog, closeDialog } = useDialog();
+const { settings } = useSettings()
 
 function removeOneBook() {
   const id = props.book.id
@@ -17,7 +18,7 @@ function removeOneBook() {
 
   let isForce = props.isForce
   if (!isForce) {
-    isForce = !settingStore.value.isOpenRecycleBin
+    isForce = !settings.isOpenRecycleBin
   }
 
   BookAction.removeOne(id, isForce)

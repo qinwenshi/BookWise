@@ -3,7 +3,7 @@ import { Book, Note, Tag } from '@renderer/batabase';
 import { NoteAction, NoteText, TagAction, TagListView } from '@renderer/components';
 import { t } from '@renderer/data';
 import { toastError, toastSuccess } from '@renderer/shared';
-import { settingStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { get, onClickOutside, set, useElementSize } from '@vueuse/core';
 import { Baseline, Copy, Headset, Highlighter, MessageSquareMore, SpellCheck2, Trash, Bot } from 'lucide-vue-next';
 
@@ -20,6 +20,7 @@ const props = defineProps<{
   onOpenAI?: (context?: string) => void
 }>()
 
+const { settings } = useSettings()
 const container = ref<HTMLElement | null>(null)
 const { width, height } = useElementSize(container)
 
@@ -181,8 +182,8 @@ const onRead = async () => {
         </div>
         <div class="flex pr-2.5">
           <div class="tooltip flex" :data-tip="t('setting.autoHighlight')">
-            <input type="checkbox" class="toggle toggle-sm toggle-success" v-model="settingStore.isAutoHighlight"
-              :checked="settingStore.isAutoHighlight" />
+            <input type="checkbox" class="toggle toggle-sm toggle-success" v-model="settings.isAutoHighlight"
+              :checked="settings.isAutoHighlight" />
           </div>
         </div>
         <div class="flex pr-2.5">

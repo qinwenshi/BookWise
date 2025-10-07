@@ -154,10 +154,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { R2ConfigManager, type R2Config } from '@renderer/shared/r2-config'
+import { ref, computed, watch } from 'vue'
 import { NoteSyncService } from '@renderer/shared/note-sync-service'
 import { toastSuccess, toastError } from '@renderer/shared'
+import { useSyncConfig } from '@renderer/store/config'
 import dayjs from 'dayjs'
 
 interface SyncLog {
@@ -166,27 +166,55 @@ interface SyncLog {
   type: 'success' | 'error'
 }
 
-const config = ref<R2Config>({ ...R2ConfigManager.config })
+const { syncConfig, updateSyncConfig, isConfigured } = useSyncConfig()
 const isSyncing = ref(false)
 const syncLogs = ref<SyncLog[]>([])
 
-const isConfigured = computed(() => R2ConfigManager.isConfigured())
-const lastSyncTime = computed(() => R2ConfigManager.getLastSyncTime())
+// 创建本地配置对象用于表单绑定
+const config = ref({
+  isEnabled: syncConfig.r2_is_enabled,
+  accountId: syncConfig.r2_account_id,
+  bucketName: syncConfig.r2_bucket_name,
+  accessKeyId: syncConfig.r2_access_key_id,
+  secretAccessKey: syncConfig.r2_secret_access_key
+})
+
+// 监听配置变化，同步到全局配置
+watch(config, (newConfig) => {
+  updateSyncConfig('r2_is_enabled', newConfig.isEnabled)
+  updateSyncConfig('r2_account_id', newConfig.accountId)
+  updateSyncConfig('r2_bucket_name', newConfig.bucketName)
+  updateSyncConfig('r2_access_key_id', newConfig.accessKeyId)
+  updateSyncConfig('r2_secret_access_key', newConfig.secretAccessKey)
+}, { deep: true })
+
+// 监听全局配置变化，同步到本地配置
+watch(syncConfig, (newSyncConfig) => {
+  config.value = {
+    isEnabled: newSyncConfig.r2_is_enabled,
+    accountId: newSyncConfig.r2_account_id,
+    bucketName: newSyncConfig.r2_bucket_name,
+    accessKeyId: newSyncConfig.r2_access_key_id,
+    secretAccessKey: newSyncConfig.r2_secret_access_key
+  }
+}, { deep: true })
+
+const lastSyncTime = computed(() => syncConfig.r2_last_sync_time)
 
 const syncStatusClass = computed(() => {
-  if (!isConfigured.value) return 'badge-warning'
+  if (!isConfigured()) return 'badge-warning'
   if (isSyncing.value) return 'badge-info'
   return config.value.isEnabled ? 'badge-success' : 'badge-neutral'
 })
 
 const syncStatusText = computed(() => {
-  if (!isConfigured.value) return '未配置'
+  if (!isConfigured()) return '未配置'
   if (isSyncing.value) return '同步中'
   return config.value.isEnabled ? '已启用' : '已禁用'
 })
 
 const updateConfig = () => {
-  R2ConfigManager.updateConfig(config.value)
+  // 配置会通过watch自动更新，这里保留兼容性
 }
 
 const formatTime = (timestamp: number) => {
@@ -211,7 +239,7 @@ const clearLogs = () => {
 }
 
 const manualSync = async () => {
-  if (!isConfigured.value) {
+  if (!isConfigured()) {
     toastError('请先完成 R2 配置')
     return
   }
@@ -237,7 +265,7 @@ const manualSync = async () => {
 }
 
 const testConnection = async () => {
-  if (!isConfigured.value) {
+  if (!isConfigured()) {
     toastError('请先完成 R2 配置')
     return
   }
@@ -257,11 +285,6 @@ const testConnection = async () => {
     toastError(message)
   }
 }
-
-onMounted(() => {
-  // 监听配置变化
-  config.value = { ...R2ConfigManager.config }
-})
 </script>
 
 <style scoped>

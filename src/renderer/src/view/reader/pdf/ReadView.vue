@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { settingStore, useBookPageStore } from '@renderer/store';
+import { useBookPageStore } from '@renderer/store';
+import { useSettings } from '@renderer/store/config';
 import { get, onKeyStroke, useDebounceFn, useElementSize, useResizeObserver, useThrottleFn } from '@vueuse/core';
 // import 'pdfjs-dist/web/pdf_viewer.css';
 import '../../../assets/css/viewer.css';
@@ -18,11 +19,12 @@ const props = withDefaults(defineProps<Props>(), {
 const PDFContainerRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const bookPageStore = useBookPageStore()
+const { settings } = useSettings()
 
 useResizeObserver(PDFContainerRef, () => PDF.resize())
 
 watchEffect(async () => {
-  setSpreadMode(settingStore.value.readMode)
+  setSpreadMode(settings.readMode as any)
 })
 
 onUnmounted(() => PDF.destroy())

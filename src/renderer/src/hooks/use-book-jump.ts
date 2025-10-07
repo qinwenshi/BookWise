@@ -1,11 +1,12 @@
 import { Book } from '@renderer/batabase'
 import { router, RouterName } from '@renderer/route'
-import { settingStore } from '@renderer/store'
+import { useSettings } from '@renderer/store/config'
 import { toRaw } from 'vue'
 import { beforeOpenBook } from './use-render-book'
 
 function jump(params: any, name: string) {
-  const isBlank = settingStore.value.isOpenNew
+  const { settings } = useSettings()
+  const isBlank = settings.isOpenNew
   const res = { name, params: params }
   if (isBlank) {
     const { href } = router.resolve(res)
