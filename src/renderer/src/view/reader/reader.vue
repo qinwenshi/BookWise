@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Note } from '@renderer/batabase';
 import { BookAction, DrawerView, DropdownView, ErrorView, List, NoteAction, RingLoadingView, useToggleDrawer } from '@renderer/components';
-import { ReadMode, t, themes } from '@renderer/data';
+import { fonts, ReadMode, t, themes } from '@renderer/data';
 import { BookRender, cahceRefreshBook, renderBook } from '@renderer/hooks';
 import { $, $$, getInterval, now, toastSuccess, toastWarning } from '@renderer/shared';
 import { isReload } from '@renderer/shared/navigation';
@@ -204,6 +204,20 @@ watchEffect(async () => {
 // 字体大小和行高
 const fontSize = useCssVar('--prose-font-size', document.documentElement)
 const lineHeight = useCssVar('--prose-line-height', document.documentElement)
+
+// 字体族设置
+const fontFamily = useCssVar('--prose-font-family', document.documentElement)
+watchEffect(() => {
+  const selectedFont = fonts.find(font => font.id === settingStore.value.fontFamily)
+  if (selectedFont) {
+    if (selectedFont.id === 'system') {
+      set(fontFamily, selectedFont.value)
+    } else {
+      // 使用 CSS 变量中定义的字体
+      set(fontFamily, `var(--font-${selectedFont.id})`)
+    }
+  }
+})
 const fontSizeList = [
   { size: '0.75rem', lineHeight: '1rem' },
   { size: '0.875rem', lineHeight: '1.25rem' },

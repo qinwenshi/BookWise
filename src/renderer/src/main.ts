@@ -1,5 +1,6 @@
 import './assets/css/main.css'
 import './assets/css/selection.css'
+import './assets/css/fonts.css'
 
 import { router } from '@renderer/route'
 import { createPinia } from 'pinia'

@@ -1,4 +1,5 @@
 export * from './enum'
+export * from './font'
 export * from './language'
 export * from './mode'
 export * from './theme'

@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits(['update:modelValue'])
 
 function onClick(value: SelectItem) {
-  const data = (props.modelValue as SelectItem).id ? value : value.id
+  const data = (props.modelValue as SelectItem)?.id ? value : value.id
   emit('update:modelValue', data)
 }
 

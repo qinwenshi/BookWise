@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { clearDB } from '@renderer/batabase';
 import { CheckBoxView, Select, SelectView, } from '@renderer/components';
-import { bookshelfModeList, langs, nodeModeList, t, themes } from '@renderer/data';
+import { bookshelfModeList, fontFamilies, langs, nodeModeList, t, themes } from '@renderer/data';
 import { settingStore } from '@renderer/store';
 import SyncSettings from '@renderer/components/sync/SyncSettings.vue';
 
@@ -28,6 +28,7 @@ const textOpacity = { '--tw-text-opacity': 0.6 };
               </div>
               <Select v-model="settingStore.theme" :is-cloce="false" :list="themes" />
             </label>
+            <SelectView v-model="settingStore.fontFamily" :list="fontFamilies" label="选择字体" />
           </div>
         </div>
         <div class="card w-full bg-base-100 shadow">

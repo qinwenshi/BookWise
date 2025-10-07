@@ -37,7 +37,7 @@ const onCloce = () => {
 onClickOutside(detailsRef, onCloce)
 
 function onClick(value: SelectItem) {
-  const data = (props.modelValue as SelectItem).id ? value : value.id
+  const data = (props.modelValue as SelectItem)?.id ? value : value.id
   emit('update:modelValue', data)
   if (props.isCloce) onCloce()
 }

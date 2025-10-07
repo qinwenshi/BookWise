@@ -6,6 +6,7 @@
   --prose-max-width: 65ch;
   --prose-font-size: 1rem;
   --prose-line-height: 1.65;
+  --prose-font-family: var(--font-fzjzxf);
 }
 
 html {
@@ -25,6 +26,7 @@ html {
   max-width: var(--prose-max-width);
   font-size: var(--prose-font-size);
   line-height: var(--prose-line-height);
+  font-family: var(--prose-font-family);
 }
 
 .prose-hidden {

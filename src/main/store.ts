@@ -15,6 +15,7 @@ interface SettingState {
   lang: string // 语言
   pdfScale: number // PDF展示比例
   listenMode: string // 听书音频模型
+  fontFamily: string // 字体设置
 }
 
 const schemaSetting: SettingState = {
@@ -30,10 +31,11 @@ const schemaSetting: SettingState = {
   theme: 'light',
   lang: 'en',
   pdfScale: 1,
-  listenMode: ''
+  listenMode: '',
+  fontFamily: 'fzjzxf'
 }
 
-const store: any = new Store<{ settting: SettingState }>({
+const store: any = new Store<{ setting: SettingState }>({
   defaults: { setting: schemaSetting },
   migrations: {
     '0.0.2': (store) => {

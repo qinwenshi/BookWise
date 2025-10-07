@@ -17,6 +17,7 @@ interface SettingState {
   lang: string // 语言
   pdfScale: number // PDF展示比例
   listenMode: string // 听书音频模型
+  fontFamily: string // 字体设置
 }
 
 const defaultState: SettingState = {
@@ -32,7 +33,8 @@ const defaultState: SettingState = {
   theme: 'light',
   lang: 'en',
   pdfScale: 1 * window.devicePixelRatio,
-  listenMode: ''
+  listenMode: '',
+  fontFamily: 'fzjzxf' // 默认使用方正静蕴小方字体
 }
 
 /**
@@ -53,7 +55,10 @@ if (isElectron && window.store) {
   watchEffect(() => {
     for (const key in defaultState) {
       const val = get(settingStore)[key]
-      window.store.set(`setting.${key}`, val)
+      // 只有当值不为 undefined 时才设置
+      if (val !== undefined) {
+        window.store.set(`setting.${key}`, val)
+      }
     }
   })
 }
