@@ -135,3 +135,51 @@
 - Cloud synchronization feature: <kbd>Upcoming</kbd>
 - Backup feature: <kbd>Upcoming</kbd>
 - Global search
+
+## Development & Build
+
+### Prerequisites
+
+- Node.js >= 20.11.1
+- npm >= 10.8.0
+
+### Development
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+### Build
+
+#### Standard Build (with TypeScript checking)
+
+```bash
+# Build for all platforms
+npm run build
+
+# Build for specific platforms
+npm run build:win    # Windows
+npm run build:mac    # macOS
+npm run build:linux  # Linux
+```
+
+#### Quick Build (skip TypeScript checking)
+
+If you encounter TypeScript errors during build but the app works fine in development, you can skip type checking:
+
+```bash
+# Build for macOS (skip TypeScript checking)
+npx electron-vite build && npx electron-builder --mac
+
+# Build for Windows (skip TypeScript checking)
+npx electron-vite build && npx electron-builder --win
+
+# Build for Linux (skip TypeScript checking)
+npx electron-vite build && npx electron-builder --linux
+```
+
+> **Note**: The quick build method skips TypeScript type checking which may hide potential issues. Use it only when you're confident the code works correctly in development mode.
