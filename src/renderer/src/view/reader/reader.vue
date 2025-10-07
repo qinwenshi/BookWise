@@ -51,6 +51,14 @@ const [isLoading, setLoading] = useToggle(false)
 const { width } = useWindowSize(); // 适配不能尺寸窗口
 const isSM = computed(() => width.value < 1024);
 
+// 根据主题动态设置文本选择样式
+const selectionClasses = computed(() => {
+  if (settingStore.value.theme === 'retro') {
+    return 'selection:bg-blue-200/40 selection:text-blue-900'
+  }
+  return 'selection:bg-info selection:text-base-content'
+});
+
 const { isLG: isCatalog, toggleDrawer: toggleCatalog } = useToggleDrawer(); // 控制目录是否显示
 const { isLG: isNote, toggleDrawer: toggleNote } = useToggleDrawer() // 控制笔记是否显示
 
@@ -528,7 +536,7 @@ onBeforeUnmount(() => {
             </div>
           </div>
           <!-- 书籍内容 -->
-          <div class="flex-1 overflow-hidden relative selection:bg-info selection:text-base-content" :id="CONTINAER_ID">
+          <div class="flex-1 overflow-hidden relative" :class="selectionClasses" :id="CONTINAER_ID">
             <PDFReadView v-if="isPDF" :isScrollLocked="isScrollLocked" />
             <template v-else>
               <!-- 滚动条模式 -->

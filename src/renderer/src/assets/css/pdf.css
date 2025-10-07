@@ -81,6 +81,11 @@
   background: AccentColor; /* stylelint-disable-line declaration-block-no-duplicate-properties */
 }
 
+/* Retro 主题的柔和文本选择颜色 */
+html[data-theme="retro"] .textLayer ::selection {
+  background: rgba(147, 197, 253, 0.4) !important; /* 柔和的蓝色 */
+}
+
 /* Avoids https://github.com/mozilla/pdf.js/issues/13840 in Chrome */
 /*#if !MOZCENTRAL*/
 .textLayer br::selection {
