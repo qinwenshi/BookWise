@@ -21,7 +21,7 @@ const bookRefreshStore = new StorageAction(KEY, sessionStorage)
 
 export function beforeOpenBook(val: Book) {
   if (!val) return
-  const data = bookJumpStore.get()
+  const data = bookJumpStore.get() || {}
   data[val.id] = { ...val, cover: '' }
   bookJumpStore.set(data)
 }
@@ -63,7 +63,17 @@ export async function renderBook(id: string) {
   const bookContent = await getBookContent(id, bookInfo.path)
   if (!bookContent) return null
 
-  const file = arrayBufferToFile(bookContent.content, bookInfo.name)
+  // 确保 content 是 ArrayBuffer 类型
+  let content: ArrayBuffer
+  if (bookContent.content instanceof Uint8Array) {
+    // 将 Uint8Array 转换为 ArrayBuffer
+    const buffer = new ArrayBuffer(bookContent.content.byteLength)
+    new Uint8Array(buffer).set(bookContent.content)
+    content = buffer
+  } else {
+    content = bookContent.content as ArrayBuffer
+  }
+  const file = arrayBufferToFile(content, bookInfo.name)
 
   BookRender.bookInfo.value = bookInfo
 
