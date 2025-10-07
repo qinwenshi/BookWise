@@ -9,7 +9,7 @@ import { useVirtualizer } from '@tanstack/vue-virtual';
 import { get, onClickOutside, onKeyStroke, set, useElementSize, useThrottleFn, useToggle, useWindowSize } from '@vueuse/core';
 import { useRouteParams } from '@vueuse/router';
 import { Baseline, Copy, Highlighter, SpellCheck2, Trash } from 'lucide-vue-next';
-import { computed, ref } from 'vue';
+import { computed, ref, nextTick } from 'vue';
 import AIPanel from './AIPanel.vue';
 import BookDetailView from './BookDetail.vue';
 import { HighlightType, highlightColor } from './highlight-color';
@@ -32,10 +32,14 @@ const emit = defineEmits<{
 const aiPanelRef = ref<InstanceType<typeof AIPanel>>()
 
 // 打开AI面板并设置上下文
-const openAIPanel = (context?: string) => {
+const openAIPanel = async (context?: string) => {
   activeTab.value = 'ai'
-  if (context && aiPanelRef.value) {
-    aiPanelRef.value.setContext(context)
+  if (context) {
+    // 等待下一个tick确保AI面板组件已经渲染
+    await nextTick()
+    if (aiPanelRef.value) {
+      aiPanelRef.value.setContext(context)
+    }
   }
 }
 

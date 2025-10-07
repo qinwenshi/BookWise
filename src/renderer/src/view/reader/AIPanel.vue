@@ -1,26 +1,26 @@
 <template>
   <div class="h-full flex flex-col bg-base-100">
     <!-- 头部 -->
-    <div class="flex-shrink-0 p-4 border-b border-base-300">
-      <div class="flex items-center justify-between mb-3">
+    <div class="flex-shrink-0 px-3 py-1.5 border-b border-base-300">
+      <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <Bot class="w-5 h-5 text-primary" />
-          <h3 class="font-semibold text-lg">AI助手</h3>
+          <Bot class="w-4 h-4 text-primary" />
+          <h3 class="font-semibold text-base">AI助手</h3>
         </div>
-        <div class="flex gap-2">
+        <div class="flex gap-1">
           <button 
-            class="btn btn-ghost btn-sm"
+            class="btn btn-ghost btn-xs"
             @click="createNewSession"
             title="新建对话"
           >
-            <Plus class="w-4 h-4" />
+            <Plus class="w-3.5 h-3.5" />
           </button>
           <button 
-            class="btn btn-ghost btn-sm"
+            class="btn btn-ghost btn-xs"
             @click="showHistory = !showHistory"
             title="聊天历史"
           >
-            <History class="w-4 h-4" />
+            <History class="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
@@ -28,8 +28,8 @@
 
     <!-- 聊天历史侧边栏 -->
     <div v-if="showHistory" class="flex-shrink-0 border-b border-base-300">
-      <div class="p-4 max-h-48 overflow-y-auto">
-        <h4 class="font-medium mb-2">聊天历史</h4>
+      <div class="p-3 max-h-48 overflow-y-auto">
+        <h4 class="font-medium mb-2 text-sm">聊天历史</h4>
         <div class="space-y-1">
           <div 
             v-for="session in chatSessions" 
@@ -39,7 +39,7 @@
             @click="loadSession(session.id)"
           >
             <div class="flex-1 min-w-0">
-              <div class="text-sm font-medium truncate">{{ session.title }}</div>
+              <div class="text-xs font-medium truncate">{{ session.title }}</div>
               <div class="text-xs text-base-content/60">{{ formatTime(session.createdAt) }}</div>
             </div>
             <button 
@@ -51,34 +51,34 @@
             </button>
           </div>
         </div>
-        <div v-if="chatSessions.length === 0" class="text-sm text-base-content/60 text-center py-4">
+        <div v-if="chatSessions.length === 0" class="text-xs text-base-content/60 text-center py-4">
           暂无聊天历史
         </div>
       </div>
     </div>
 
     <!-- AI聊天界面 -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-4" ref="chatContainer">
+    <div class="flex-1 overflow-y-auto p-3 space-y-3" ref="chatContainer">
       <!-- 聊天记录 -->
       <div v-for="(message, index) in chatHistory" :key="index" class="chat" 
            :class="message.role === 'user' ? 'chat-end' : 'chat-start'">
         <div class="chat-image avatar">
-          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <component :is="message.role === 'user' ? User : Bot" class="w-4 h-4 text-primary-content" />
+          <div class="w-6 h-6 rounded-full bg-primary flex items-center justify-center">
+            <component :is="message.role === 'user' ? User : Bot" class="w-3 h-3 text-primary-content" />
           </div>
         </div>
-        <div class="chat-header">
+        <div class="chat-header text-xs">
           {{ message.role === 'user' ? '你' : 'AI助手' }}
-          <time class="text-xs opacity-50 ml-2">{{ formatTime(message.timestamp) }}</time>
+          <time class="text-xs opacity-50 ml-1">{{ formatTime(message.timestamp) }}</time>
         </div>
-        <div class="chat-bubble" :class="message.role === 'user' ? 'chat-bubble-primary' : 'chat-bubble-secondary'">
+        <div class="chat-bubble text-sm" :class="message.role === 'user' ? 'chat-bubble-primary' : 'chat-bubble-secondary'">
           <!-- 用户消息 -->
           <div v-if="message.role === 'user'">{{ message.content }}</div>
           
           <!-- AI消息 -->
           <div v-else>
             <!-- 思考过程 -->
-            <div v-if="message.thinking" class="mb-2 p-2 bg-base-200 rounded text-sm opacity-75">
+            <div v-if="message.thinking" class="mb-2 p-2 bg-base-200 rounded text-xs opacity-75">
               <div class="font-semibold mb-1">💭 思考过程:</div>
               <div class="whitespace-pre-wrap">{{ message.thinking }}</div>
             </div>
@@ -92,11 +92,11 @@
       <!-- 加载状态 -->
       <div v-if="isLoading" class="chat chat-start">
         <div class="chat-image avatar">
-          <div class="w-8 h-8 rounded-full bg-secondary flex items-center justify-center">
-            <Bot class="w-4 h-4 text-secondary-content animate-pulse" />
+          <div class="w-6 h-6 rounded-full bg-secondary flex items-center justify-center">
+            <Bot class="w-3 h-3 text-secondary-content animate-pulse" />
           </div>
         </div>
-        <div class="chat-bubble chat-bubble-secondary">
+        <div class="chat-bubble chat-bubble-secondary text-sm">
           <div class="flex items-center space-x-2">
             <span class="loading loading-dots loading-sm"></span>
             <span>AI正在思考中...</span>
@@ -106,19 +106,19 @@
     </div>
     
     <!-- 输入区域 -->
-    <div class="border-t border-base-200 p-4">
+    <div class="border-t border-base-200 p-3">
       <!-- 上下文显示 -->
-      <div v-if="contextText" class="mb-3 p-3 bg-base-200 rounded-lg">
-        <div class="text-sm font-semibold mb-1">📖 选中文本:</div>
-        <div class="text-sm text-base-content/70 line-clamp-3">{{ contextText }}</div>
-        <button @click="clearContext" class="btn btn-xs btn-ghost mt-2">清除上下文</button>
+      <div v-if="contextText" class="mb-3 p-2 bg-base-200 rounded-lg">
+        <div class="text-xs font-semibold mb-1">📖 选中文本:</div>
+        <div class="text-xs text-base-content/70 line-clamp-3">{{ contextText }}</div>
+        <button @click="clearContext" class="btn btn-xs btn-ghost mt-1">清除上下文</button>
       </div>
       
       <!-- 快捷提示词 -->
-      <div class="mb-3 flex flex-wrap gap-2">
+      <div class="mb-2 flex flex-wrap gap-1">
         <button v-for="prompt in quickPrompts" :key="prompt.text" 
                 @click="useQuickPrompt(prompt.text)"
-                class="btn btn-xs btn-outline">
+                class="btn btn-xs btn-outline text-xs">
           {{ prompt.label }}
         </button>
       </div>
@@ -129,16 +129,16 @@
           v-model="inputMessage" 
           @keydown.enter.prevent="handleEnter"
           placeholder="输入你的问题或提示词..."
-          class="textarea textarea-bordered flex-1 resize-none"
+          class="textarea textarea-bordered flex-1 resize-none text-sm"
           rows="2"
           :disabled="isLoading"
         ></textarea>
         <button 
           @click="sendMessage" 
           :disabled="!inputMessage.trim() || isLoading"
-          class="btn btn-primary"
+          class="btn btn-primary btn-sm"
         >
-          <Send class="w-4 h-4" />
+          <Send class="w-3 h-3" />
         </button>
       </div>
     </div>

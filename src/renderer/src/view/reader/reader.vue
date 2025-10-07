@@ -165,7 +165,7 @@ function goBack() {
 }
 
 // AI面板
-function openAI(context?: string) {
+async function openAI(context?: string) {
   // 确保笔记面板是显示的
   if (isSM.value) {
     // 移动端：打开抽屉
@@ -182,7 +182,7 @@ function openAI(context?: string) {
   
   // 打开AI面板
   if (noteViewRef.value) {
-    noteViewRef.value.openAIPanel(context)
+    await noteViewRef.value.openAIPanel(context)
   }
 }
 
