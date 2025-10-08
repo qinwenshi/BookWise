@@ -241,7 +241,6 @@
   transform-origin: 0 0;
   caret-color: CanvasText;
   z-index: 0;
-  mix-blend-mode: normal;
 }
 
 .textLayer.highlighting {
@@ -267,18 +266,17 @@
 }
 
 .textLayer .highlight {
-  --highlight-bg-color: rgba(99, 102, 241, 0.28);
-  --highlight-selected-bg-color: rgba(79, 70, 229, 0.34);
+  --highlight-bg-color: rgb(180 0 170 / 0.25);
+  --highlight-selected-bg-color: rgb(0 100 0 / 0.25);
   --highlight-backdrop-filter: none;
   --highlight-selected-backdrop-filter: none;
 
-  margin: 0;
-  padding: 0.08em 0;
+  margin: -1px;
+  padding: 1px;
   background-color: var(--highlight-bg-color);
   -webkit-backdrop-filter: var(--highlight-backdrop-filter);
   backdrop-filter: var(--highlight-backdrop-filter);
   border-radius: 4px;
-  box-decoration-break: clone;
 }
 
 @media screen and (forced-colors: active) {
@@ -312,9 +310,15 @@
   backdrop-filter: var(--highlight-selected-backdrop-filter);
 }
 
-.textLayer ::-moz-selection,
-.textLayer ::selection {
+.textLayer span::-moz-selection {
   background: rgba(99, 102, 241, 0.32);
+  color: transparent;
+}
+
+.textLayer span::selection {
+  background: rgba(99, 102, 241, 0.32);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
 }
 
 .textLayer br::-moz-selection {
