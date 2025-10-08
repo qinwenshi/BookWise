@@ -11,9 +11,15 @@ import DetailContent from './DetailContent.vue';
 const props = defineProps<{ note: Note }>()
 
 const noteList = ref<NoteText[]>([])
+const detailContentRef = ref<InstanceType<typeof DetailContent> | null>(null)
 
 const { dialogRef, openDialog, closeDialog } = useDialog();
 
+const onSave = async () => {
+  const notes = JSON.stringify(detailContentRef.value?.editableNoteList)
+  await NoteAction.update(props.note.id, { notes })
+  closeDialog()
+}
 
 const initEdite = async () => {
   openDialog()
@@ -32,8 +38,9 @@ initEdite()
         <h3 class="font-bold text-lg">{{ t('note.noteDetail') }}</h3>
         <div @click="closeDialog"> <kbd class="kbd cursor-pointer">Esc</kbd></div>
       </div>
-      <DetailContent :note="note" :noteList="noteList" />
+      <DetailContent :note="note" :noteList="noteList" ref="detailContentRef" />
       <div class="modal-action">
+        <button class="btn btn-primary" @click="onSave">{{ t('common.save') }}</button>
         <button class="btn btn-outline " @click="closeDialog">{{ t('common.close') }}</button>
       </div>
     </div>
