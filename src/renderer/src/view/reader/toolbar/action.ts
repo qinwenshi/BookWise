@@ -217,6 +217,7 @@ export class NoteRichAction {
   setNotes(_note: Note) {
     set(this.notes, NoteAction.getNoteText(_note.notes))
     this.noteDetail = _note
+    set(this.value, '')
   }
 
   /**
@@ -254,6 +255,7 @@ export class NoteRichAction {
     highlighter.remove(sources[0].id)
     highlighter.fromSource(sources)
     toastSuccess('添加笔记成功')
+    set(this.value, '')
   }
 
   /**
@@ -266,9 +268,9 @@ export class NoteRichAction {
 
     const id = this.noteDetail?.id
     if (!id) return
-    
+
     const tag = TagAction.toJSON(tags)
-    
+
     if (value) {
       this.notes.value.push({ value, time: now() })
     }
@@ -278,6 +280,7 @@ export class NoteRichAction {
     })
 
     toastSuccess('添加笔记成功')
+    set(this.value, '')
   }
 
   async remove(index: number) {
