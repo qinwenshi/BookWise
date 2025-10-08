@@ -28,6 +28,20 @@ const emit = defineEmits<{
           }}</button>
       </div>
     </div>
-    <p>{{ item.value }}</p>
+    <div class="note-content">
+      <p class="note-content__text">{{ item.value }}</p>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.note-content {
+  max-height: 12rem;
+  overflow-y: auto;
+}
+
+.note-content__text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+</style>

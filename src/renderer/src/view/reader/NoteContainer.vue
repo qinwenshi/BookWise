@@ -270,7 +270,7 @@ const throttleClick = useThrottleFn((val: Note) => {
         <!-- 笔记工具栏 -->
         <div class="fixed inset-0" v-if="selectNote">
           <div
-            class="card bg-base-100 absolute transition ease-in-out   right-[24rem] border border-primary z-50 select-none cursor-pointer max-w-md bar-shadow"
+            class="card bg-base-100 absolute transition ease-in-out   right-[24rem] border border-primary z-50 select-none cursor-pointer max-w-md bar-shadow max-h-[calc(100vh-2rem)] overflow-y-auto"
             :style="{ top: `${barTop}px` }" ref="toolbarRef">
             <div class="card-body p-4">
               <div class="grid grid-cols-1 bg-base-200 rounded-lg p-2 divide-y divide-neutral"
