@@ -13,6 +13,8 @@ const editableNoteList = ref(JSON.parse(JSON.stringify(props.noteList)))
 
 // 跳转
 const jump = (value: Note) => NoteAction.jumpToBook(value)
+
+defineExpose({ editableNoteList })
 </script>
 
 <template>
@@ -26,7 +28,7 @@ const jump = (value: Note) => NoteAction.jumpToBook(value)
   </div>
   <!-- 笔记内容 -->
   <div class="bg-base-200 p-3 rounded-md grid grid-cols-1 divide-y">
-    <div v-for="(item, index) in editableNoteList" :key="index"> :key="index">
+    <div v-for="(item, index) in editableNoteList" :key="index">
       <div class="flex flex-row justify-between items-center mt-3">
         <div class="stat-desc">{{ dayjs(item.time).format('L LT') }}</div>
       </div>
