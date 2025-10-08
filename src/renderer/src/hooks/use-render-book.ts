@@ -8,7 +8,6 @@ import {
   StorageAction,
   tocTreeToArray
 } from '@renderer/shared'
-import { PDF } from '@renderer/view/reader/pdf/pdf'
 import { ref, toRaw } from 'vue'
 import { bookLoadedSetionBus } from './use-event-bus'
 
@@ -44,8 +43,22 @@ async function getBookInfo(id: string) {
 async function getBookContent(bookId: string, url: string) {
   try {
     if (isElectron) {
-      const content = await window.api.readFile(url)
-      return { content, bookId }
+      const api = window.api
+      const content = api?.readFile ? await api.readFile(url) : null
+      if (content) {
+        const buffer =
+          content instanceof Uint8Array
+            ? content.buffer.slice(content.byteOffset, content.byteOffset + content.byteLength)
+            : (content as ArrayBuffer)
+        await BookContentAction.bulkAdd([{ bookId, content: buffer }])
+        return { bookId, content: buffer }
+      }
+
+      const fallback = await BookContentAction.findOne(bookId)
+      if (fallback) {
+        return fallback
+      }
+      return null
     } else {
       // 网页从数据库中获取
       return BookContentAction.findOne(bookId)
@@ -80,21 +93,23 @@ export async function renderBook(id: string) {
   bookRender = new Reader()
   await bookRender.open(file)
   // console.log('bookRender', bookRender)
-  if (bookRender.bookType === 'pdf') {
-    const outline = await PDF.getOutline()
-    BookRender.bookToc.value = outline
-  } else {
+  if (bookRender.bookType !== 'pdf') {
     const toc = bookRender.book.toc || []
     handleToc(toc)
     BookRender.isInOneCatalog = sureBookCatalog(toc)
     BookRender.bookArrayToc.length = 0
     BookRender.bookArrayToc.push(...tocTreeToArray(toc))
 
-    BookRender.sectionNum = bookRender.book.sections?.length || 0
+    BookRender.sectionNum.value = bookRender.book.sections?.length || 0
     BookRender.bookToc.value = toc
+  } else {
+    BookRender.bookArrayToc.length = 0
+    BookRender.bookToc.value = []
+    BookRender.sectionNum.value = 0
+    BookRender.isInOneCatalog = false
   }
 
-  return { bookContent }
+  return { bookContent, content }
 }
 
 function handleToc(toc: any[]) {

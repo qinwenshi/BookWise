@@ -15,7 +15,7 @@ export interface Store {
 declare global {
   interface Window {
     electron: ElectronAPI
-    api: API
+    api?: API
     store: Store
   }
 }

@@ -30,12 +30,11 @@ const findPageIndex = (node: HTMLElement) => {
   return node.getAttribute(pageAttribateName) || `${UNKNOWN_INDEX}`
 }
 
-const getfirstElementChild = (node: HTMLElement) => {
-  let result = node.firstElementChild as HTMLElement
-  while (result?.firstElementChild) {
-    result = result.firstElementChild as HTMLElement
+const getDeepFirstNode = (node: HTMLElement): Node => {
+  let result: Node = node
+  while (result.firstChild) {
+    result = result.firstChild
   }
-
   return result
 }
 
@@ -50,12 +49,11 @@ const getRangeDoms = (startDom: HTMLElement, endDom: HTMLElement) => {
   return result
 }
 
-const getlastElementChild = (node: HTMLElement) => {
-  let result = node.lastElementChild as HTMLElement
-  while (result?.lastElementChild) {
-    result = result.lastElementChild as HTMLElement
+const getDeepLastNode = (node: HTMLElement): Node => {
+  let result: Node = node
+  while (result.lastChild) {
+    result = result.lastChild
   }
-
   return result
 }
 
@@ -112,28 +110,28 @@ const handleSectionSource = (startSection: HTMLElement, endSection: HTMLElement,
       const page = findPageIndex(dom)
       let range: Range
       if (i === 0) {
-        const endDom = getlastElementChild(dom)
+        const endDom = getDeepLastNode(dom)
         range = setRange({
           startDom: startContainer,
           startOffset,
-          endDom: endDom.lastChild!,
+          endDom,
           endOffset: endDom.textContent?.length || 0
         })
       } else if (i === doms.length - 1) {
-        const startDom = getfirstElementChild(dom)
+        const startDom = getDeepFirstNode(dom)
         range = setRange({
-          startDom: startDom.lastChild!,
+          startDom,
           startOffset: 0,
           endDom: endContainer,
           endOffset
         })
       } else {
-        const startDom = getfirstElementChild(dom)
-        const endDom = getlastElementChild(dom)
+        const startDom = getDeepFirstNode(dom)
+        const endDom = getDeepLastNode(dom)
         range = setRange({
-          startDom: startDom.lastChild!,
+          startDom,
           startOffset: 0,
-          endDom: endDom.lastChild!,
+          endDom,
           endOffset: endDom.textContent?.length || 0
         })
       }

@@ -87,15 +87,28 @@ async function loadData() {
 
     const data = await renderBook(bookId)
     if (!data) return
+    const { content: pdfContent } = data
+
     BookRender.handleBookSection()
     const book = get(bookInfo)
 
-    set(isPDF, BookRender.getBook()?.bookType === 'pdf')
+    const isPdfBook = BookRender.getBook()?.bookType === 'pdf'
+    set(isPDF, isPdfBook)
     set(hasBook, true)
 
     setLoading(false)
 
     await nextTick()
+
+    if (isPdfBook && pdfContent) {
+      try {
+        await PDF.render(pdfContent, bookId)
+        const outline = await PDF.getOutline()
+        set(BookRender.bookToc, outline)
+      } catch (error) {
+        console.log(error)
+      }
+    }
 
     initHighlight(book!);
     // 笔记跳转

@@ -7,6 +7,7 @@ import { setI18nLanguage } from './data';
 import './dayjs';
 import { bookPositionStore, bookReadTimeStore, useBookshelfStore, useBookStore, useNoteStore, useTagStore } from './store';
 import { useSettings } from './store/config';
+import { ALLOW_CONTEXT_MENU_ATTR } from './shared/context-menu';
 
 const { settings } = useSettings()
 
@@ -69,10 +70,17 @@ const allBookshelf = BookshelfAction.observable()
 watchEffect(() => {
   boohshelfStore.setBookshelf(get(allBookshelf) || [])
 })
+const onContextMenu = (event: MouseEvent) => {
+  const target = event.target as HTMLElement | null
+  if (target?.closest(`[${ALLOW_CONTEXT_MENU_ATTR}]`)) {
+    return
+  }
+  event.preventDefault()
+}
 </script>
 
 <template>
-  <div class="size-full" @contextmenu.prevent>
+  <div class="size-full" @contextmenu="onContextMenu">
     <div class="flex overflow-hidden">
       <router-view v-slot="{ Component }">
         <template v-if="Component">

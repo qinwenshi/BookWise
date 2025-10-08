@@ -6,6 +6,7 @@ import { get, onKeyStroke, useDebounceFn, useElementSize, useResizeObserver, use
 import '../../../assets/css/viewer.css';
 
 import { onUnmounted, ref, watchEffect } from 'vue';
+import { ALLOW_CONTEXT_MENU_ATTR } from '@renderer/shared/context-menu';
 import { toNextView, toPrewView } from '../util';
 import { PDF, setSpreadMode } from './pdf';
 
@@ -20,6 +21,7 @@ const PDFContainerRef = ref<HTMLElement | null>(null)
 const contentRef = ref<HTMLElement | null>(null)
 const bookPageStore = useBookPageStore()
 const { settings } = useSettings()
+const allowContextMenuAttr = ALLOW_CONTEXT_MENU_ATTR
 
 useResizeObserver(PDFContainerRef, () => PDF.resize())
 
@@ -63,6 +65,7 @@ const scroll = useDebounceFn(() => {
 <template>
   <div id="viewerContainer" ref="PDFContainerRef"
     class="h-full w-full bg-base-200  absolute overflow-auto scroll-smooth scrollbar-thin scrollbar-track-transparent scrollbar-thumb-gray-400" 
+    :[allowContextMenuAttr]="true"
     style="scrollbar-gutter: stable both;" @scroll="scroll">
     <div ref="contentRef" id="viewer" class="pdfViewer scrollWrapped">
     </div>
